@@ -1,848 +1,2037 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Manufacturing KPI Dashboard — Top Section</title>
-<style>
-  :root{
-    --teal:#0d9488;
-    --teal-dark:#0f766e;
-    --yellow:#b8890a;
-    --red:#ef4444;
-    --green:#16a34a;
-    --gray:#6b7280;
-    --border:#e2e5e9;
-    --text:#1f2937;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    font-family:"Segoe UI", Arial, sans-serif;
-    background:#f3f4f6;
-    color:var(--text);
-    font-size:13px;
-    padding:16px;
-  }
-  .header{
-    font-size:17px;
-    font-weight:600;
-    margin-bottom:14px;
-    color:var(--text);
-  }
-  .row{
-    display:flex;
-    gap:10px;
-    margin-bottom:10px;
-  }
-  .card{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:4px;
-    padding:10px 14px;
-    flex:1;
-    min-width:0;
-  }
-  .card-title{
-    text-align:center;
-    font-size:12px;
-    font-weight:600;
-    color:var(--text);
-    padding-bottom:6px;
-    border-bottom:2px solid var(--teal);
-    margin-bottom:8px;
-  }
-  .big-number{
-    text-align:center;
-    font-size:30px;
-    font-weight:700;
-    color:var(--text);
-  }
-  .big-number.small{font-size:24px;}
+  <meta charset="UTF-8">
+  <title>Manufacturing KPI Dashboard — Top Section</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal: #0d9488;
+      --teal-dark: #0f766e;
+      --yellow: #b8890a;
+      --red: #ef4444;
+      --green: #16a34a;
+      --gray: #6b7280;
+      --border: #e2e5e9;
+      --text: #1f2937;
+    }
 
-  /* Plan Achieve / OEE style cards with sub-rows + big % */
-  .split-card{
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
-  .sub-list{
-    flex:1;
-  }
-  .sub-row{
-    display:flex;
-    justify-content:space-between;
-    font-size:12px;
-    padding:2px 0;
-  }
-  .sub-row .val{
-    color:var(--teal);
-    font-weight:600;
-  }
-  .sub-row .val.yellow{color:var(--yellow);}
-  .split-big{
-    font-size:30px;
-    font-weight:700;
-    color:var(--red);
-    padding-left:10px;
-    border-left:1px solid var(--border);
-    min-width:70px;
-    text-align:center;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  /* New priority cards row */
-  .mini-title{
-    font-size:11px;
-    font-weight:600;
-    color:var(--gray);
-    text-transform:uppercase;
-    letter-spacing:.3px;
-    margin-bottom:6px;
-  }
-  .bottleneck-stage{
-    font-size:22px;
-    font-weight:700;
-    color:var(--red);
-    text-align:center;
-  }
-  .bottleneck-sub{
-    text-align:center;
-    font-size:11.5px;
-    color:var(--gray);
-    margin-top:4px;
-  }
-  .fpy-strip{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:10px 6px;
-  }
-  .fpy-item{
-    text-align:center;
-    flex:1;
-  }
-  .fpy-item .label{
-    font-size:13px;
-    color:var(--gray);
-    white-space:nowrap;
-  }
-  .fpy-item .val{
-    font-size:22px;
-    font-weight:700;
-  }
-  .fpy-item .val.good{color:var(--green);}
-  .fpy-item .val.warn{color:var(--yellow);}
-  .fpy-item .val.bad{color:var(--red);}
+    html,
+    body {
+      height: 100vh;
+      overflow: hidden;
+    }
 
-  .alarm-number{
-    text-align:center;
-    font-size:30px;
-    font-weight:700;
-    color:var(--red);
-  }
-  .alarm-number.ok{color:var(--green);}
+    body {
+      margin: 0;
+      font-family: 'Inter', "Segoe UI", Arial, sans-serif;
+      background: #f3f4f6;
+      color: var(--text);
+      font-size: 13px;
+      padding: 12px 16px 52px 16px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
 
-  /* stage utilization mini bars */
-  .util-row{
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-  }
-  .util-stage{
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-  .util-label{
-    width:64px;
-    font-size:11px;
-    color:var(--gray);
-    white-space:nowrap;
-    flex-shrink:0;
-  }
-  .util-bar{
-    flex:1;
-    height:12px;
-    display:flex;
-    border-radius:3px;
-    overflow:hidden;
-    background:#eee;
-  }
-  .seg-run{background:var(--teal);}
-  .seg-starved{background:#cbd5e1;}
-  .seg-blocked{background:var(--yellow);}
+    .header {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
 
-  .legend{
-    display:flex;
-    gap:10px;
-    font-size:10px;
-    color:var(--gray);
-    margin-top:6px;
-    justify-content:center;
-  }
-  .legend span{display:flex; align-items:center; gap:3px;}
-  .legend i{width:9px; height:9px; display:inline-block; border-radius:2px;}
+    .row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
 
-  .empty-zone{
-    margin-top:18px;
-    border:2px dashed var(--border);
-    border-radius:6px;
-    min-height:300px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--gray);
-    font-size:13px;
-  }
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 12px;
+      flex: 1;
+      min-width: 0;
+    }
 
-  /* Hourly production tracking (now its own full-width row) */
-  .hourly-chart{
-    display:flex;
-    align-items:flex-end;
-    gap:0;
-    height:170px;
-    padding:0 4px 4px 4px;
-    justify-content:space-between;
-  }
-  .hour-pct{
-    font-size:11px;
-    font-weight:700;
-    margin-bottom:5px;
-  }
-  .hour-pct.good{color:var(--green);}
-  .hour-pct.warn{color:var(--yellow-dark, #b8890a);}
-  .hour-pct.bad{color:var(--red);}
-  .hour-pct.muted{color:#b0b5bc;}
-  .hour-col{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    height:100%;
-    width:92px;
-  }
-  .hour-bar{
-    width:52px;
-    flex:1;
-    min-height:0;
-    border-radius:5px;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-end;
-    background:#d1d5db;
-  }
-  .hour-fill-green{width:100%; background:var(--green);}
-  .hour-fill-top{width:100%;}
-  .hour-fill-top.red{background:var(--red);}
-  .hour-fill-top.yellow{background:var(--yellow);}
-  .hour-count{
-    font-size:11.5px;
-    color:var(--gray);
-    margin-top:6px;
-    font-weight:600;
-  }
-  .hour-label{
-    font-size:11px;
-    color:var(--text);
-    font-weight:600;
-    margin-top:2px;
-    text-align:center;
-    line-height:1.3;
-  }
-  .hourly-legend{
-    display:flex;
-    gap:16px;
-    justify-content:center;
-    margin-top:12px;
-    font-size:11px;
-    color:var(--gray);
-    flex-wrap:wrap;
-  }
-  .hourly-legend span{display:flex; align-items:center; gap:4px;}
-  .hourly-legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+    .card-title {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--teal);
+      margin-bottom: 8px;
+    }
 
-  /* Error count strip (inverted logic - fewer is better) */
-  .err-chart{
-    display:flex;
-    align-items:flex-end;
-    gap:10px;
-    height:190px;
-    padding:0 4px 4px 0;
-    justify-content:flex-start;
-  }
-  .err-col{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    height:100%;
-    width:92px;
-  }
-  .err-count-top{
-    font-size:11px;
-    font-weight:700;
-    margin-bottom:5px;
-  }
-  .err-count-top.good{color:var(--green);}
-  .err-count-top.warn{color:var(--yellow);}
-  .err-count-top.bad{color:var(--red);}
-  .err-bar-track{
-    width:24px;
-    flex:1;
-    min-height:0;
-    border-radius:4px;
-    background:#eef0f2;
-    display:flex;
-    align-items:flex-end;
-    overflow:hidden;
-  }
-  .err-bar-fill{
-    width:100%;
-    border-radius:4px 4px 0 0;
-  }
-  .err-hour-label{
-    font-size:11px;
-    color:var(--text);
-    font-weight:600;
-    margin-top:6px;
-  }
-  .err-minute-track{
-    position:relative;
-    width:38px;
-    height:14px;
-    background:#f3f4f6;
-    border:1px solid var(--border);
-    border-radius:3px;
-    margin-top:5px;
-  }
-  .err-tick{
-    position:absolute;
-    top:1px;
-    width:3px;
-    height:10px;
-    border-radius:1px;
-    background:var(--red);
-  }
-  .err-tick.machine{background:#ef4444;}
-  .err-tick.human{background:#ec4899;}
-  .err-tick.other{background:#a855f7;}
-  .err-minute-hint{
-    font-size:8.5px;
-    color:#b0b5bc;
-    margin-top:2px;
-  }
-  .err-legend{
-    display:flex;
-    gap:16px;
-    justify-content:center;
-    margin-top:12px;
-    font-size:11px;
-    color:var(--gray);
-    flex-wrap:wrap;
-  }
-  .err-legend span{display:flex; align-items:center; gap:5px;}
-  .err-legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+    .big-number {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .big-number.small {
+      font-size: 24px;
+    }
+
+    /* Plan Achieve / OEE style cards with sub-rows + big % */
+    .split-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sub-list {
+      flex: 1;
+    }
+
+    .sub-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 2px 0;
+    }
+
+    .sub-row .val {
+      color: var(--teal);
+      font-weight: 600;
+    }
+
+    .sub-row .val.yellow {
+      color: var(--yellow);
+    }
+
+    .split-big {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--red);
+      padding-left: 10px;
+      border-left: 1px solid var(--border);
+      min-width: 70px;
+      text-align: center;
+    }
+
+    /* New priority cards row */
+    .mini-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      margin-bottom: 6px;
+    }
+
+    .bottleneck-stage {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--red);
+      text-align: center;
+    }
+
+    .bottleneck-sub {
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    .fpy-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px 6px;
+    }
+
+    .fpy-item {
+      text-align: center;
+      flex: 1;
+    }
+
+    .fpy-item .label {
+      font-size: 13px;
+      color: var(--gray);
+      white-space: nowrap;
+    }
+
+    .fpy-item .val {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .fpy-item .val.good {
+      color: var(--green);
+    }
+
+    .fpy-item .val.warn {
+      color: var(--yellow);
+    }
+
+    .fpy-item .val.bad {
+      color: var(--red);
+    }
+
+    .alarm-number {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--red);
+    }
+
+    .alarm-number.ok {
+      color: var(--green);
+    }
+
+    /* stage utilization mini bars */
+    .util-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .util-stage {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .util-label {
+      width: 64px;
+      font-size: 11px;
+      color: var(--gray);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .util-bar {
+      flex: 1;
+      height: 12px;
+      display: flex;
+      border-radius: 3px;
+      overflow: hidden;
+      background: #eee;
+    }
+
+    .seg-run {
+      background: var(--teal);
+    }
+
+    .seg-starved {
+      background: #cbd5e1;
+    }
+
+    .seg-blocked {
+      background: var(--yellow);
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      font-size: 10px;
+      color: var(--gray);
+      margin-top: 6px;
+      justify-content: center;
+    }
+
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .legend i {
+      width: 9px;
+      height: 9px;
+      display: inline-block;
+      border-radius: 2px;
+    }
+
+    .empty-zone {
+      margin-top: 18px;
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    /* Hourly production tracking (now its own full-width row) */
+    .hourly-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+      height: 160px;
+      padding: 0 4px 4px 4px;
+      justify-content: space-between;
+    }
+
+    .hour-pct {
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .hour-pct.good {
+      color: var(--green);
+    }
+
+    .hour-pct.warn {
+      color: var(--yellow-dark, #b8890a);
+    }
+
+    .hour-pct.bad {
+      color: var(--red);
+    }
+
+    .hour-pct.muted {
+      color: #b0b5bc;
+    }
+
+    .hour-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      width: 92px;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    .hour-col:hover {
+      background: #f9fafb;
+      transform: translateY(-3px);
+    }
+
+    .hour-mid-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      margin: 6px 0;
+    }
+
+    .bar-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      align-self: stretch;
+      min-height: 0;
+    }
+
+    .hour-bar {
+      width: 32px;
+      flex: 1;
+      border-radius: 5px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: #d1d5db;
+    }
+
+    .hour-fill-green {
+      width: 100%;
+      background: var(--green);
+    }
+
+    .hour-fill-top {
+      width: 100%;
+    }
+
+    .hour-fill-top.red {
+      background: var(--red);
+    }
+
+    .hour-fill-top.yellow {
+      background: var(--yellow);
+    }
+
+    .hour-count {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--gray);
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.1;
+    }
+
+    .hour-count .produced {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .hour-count .produced.good {
+      color: var(--green);
+    }
+
+    .hour-count .produced.warn {
+      color: var(--yellow);
+    }
+
+    .hour-count .produced.bad {
+      color: var(--red);
+    }
+
+    .hour-count .produced.muted {
+      color: #b0b5bc;
+    }
+
+    .hour-count .divider {
+      width: 16px;
+      height: 1px;
+      background: #cbd5e1;
+      margin: 3px 0;
+    }
+
+    .hour-count .target {
+      font-size: 11px;
+      color: var(--gray);
+      font-weight: 600;
+    }
+
+    .hour-label {
+      font-size: 11px;
+      color: var(--text);
+      font-weight: 600;
+      margin-top: 2px;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .hourly-legend {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--gray);
+      flex-wrap: wrap;
+    }
+
+    .hourly-legend span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hourly-legend i {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    /* Error count strip grid layout */
+    .err-chart {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      height: auto;
+      padding: 0;
+      justify-content: space-between;
+    }
+
+    .err-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 92px;
+    }
+
+    .err-count-top {
+      height: 20px;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+
+    .err-count-top.good {
+      color: var(--green);
+    }
+
+    .err-count-top.warn {
+      color: var(--yellow);
+    }
+
+    .err-count-top.bad {
+      color: var(--red);
+    }
+
+    .err-row-label {
+      height: 28px;
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+    }
+
+    .err-minute-track {
+      position: relative;
+      width: 76px;
+      height: 28px;
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      margin-top: 6px;
+    }
+
+    .err-tick {
+      position: absolute;
+      top: 2px;
+      width: 3px;
+      height: 22px;
+      border-radius: 1px;
+    }
+
+    .err-tick.machine {
+      background: #ef4444;
+    }
+
+    .err-tick.human {
+      background: #ec4899;
+    }
+
+    .err-tick.other {
+      background: #a855f7;
+    }
+
+    .err-minute-hint {
+      height: 12px;
+      font-size: 8.5px;
+      color: #b0b5bc;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .err-hour-label {
+      height: 15px;
+      font-size: 11px;
+      color: var(--text);
+      font-weight: 600;
+      margin-top: 3px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .err-legend {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--gray);
+      flex-wrap: wrap;
+    }
+
+    .err-legend span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .err-legend i {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+    }
 
 
 
-  /* Error log */
-  .err-log-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:12px;
-  }
-  .err-log-table th{
-    text-align:left;
-    font-size:10.5px;
-    text-transform:uppercase;
-    color:var(--gray);
-    letter-spacing:.3px;
-    padding:4px 8px;
-    border-bottom:1px solid var(--border);
-  }
-  .err-log-table td{
-    padding:6px 8px;
-    border-bottom:1px solid #f1f2f4;
-  }
-  .status-pill{
-    display:inline-block;
-    padding:2px 8px;
-    border-radius:10px;
-    font-size:10.5px;
-    font-weight:600;
-  }
-  .status-pill.active{background:#fee2e2; color:var(--red);}
-  .status-pill.cleared{background:#dcfce7; color:var(--green);}
+    /* Error log */
+    .err-log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
 
-  /* MTBF/MTTR shift timeline */
-  .mttr-stage-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:10px;
-  }
-  .mttr-label{
-    width:64px;
-    font-size:12px;
-    font-weight:600;
-    flex-shrink:0;
-  }
-  .mttr-track{
-    position:relative;
-    flex:1;
-    height:22px;
-    background:var(--green);
-    border-radius:3px;
-    overflow:hidden;
-  }
-  .mttr-down-block{
-    position:absolute;
-    top:0;
-    height:100%;
-    background:var(--red);
-  }
-  .mttr-summary{
-    width:190px;
-    flex-shrink:0;
-    font-size:11px;
-    display:flex;
-    gap:10px;
-    justify-content:flex-end;
-  }
-  .mttr-summary b{font-weight:700;}
-  .mttr-axis{
-    display:flex;
-    justify-content:space-between;
-    font-size:10px;
-    color:var(--gray);
-    margin:2px 0 4px 74px;
-  }
-  .mttr-legend{
-    display:flex;
-    gap:16px;
-    justify-content:center;
-    margin-top:10px;
-    font-size:11px;
-    color:var(--gray);
-  }
-  .mttr-legend span{display:flex; align-items:center; gap:5px;}
-  .mttr-legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+    .err-log-table th {
+      text-align: left;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      color: var(--gray);
+      letter-spacing: .3px;
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--border);
+    }
 
-  /* Bottom taskbar-style docked panel */
-  body{ padding-bottom:310px; }
-  .bottom-bar{
-    position:fixed;
-    left:0;
-    right:0;
-    bottom:40px;
-    background:#e5e7eb;
-    border-top:2px solid var(--border);
-    box-shadow:0 -4px 12px rgba(0,0,0,0.06);
-    padding:14px 16px;
-    display:flex;
-    gap:10px;
-    z-index:100;
-    max-height:260px;
-  }
-  .bottom-bar .card{
-    margin-bottom:0;
-    padding:10px 14px;
-  }
+    .err-log-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #f1f2f4;
+    }
 
-  /* Excel-style display tab strip, dark gray, pinned to the very bottom */
-  .display-tabs{
-    position:fixed;
-    left:0;
-    right:0;
-    bottom:0;
-    height:40px;
-    background:#374151;
-    display:flex;
-    align-items:flex-end;
-    gap:2px;
-    padding:0 10px;
-    z-index:101;
-  }
-  .display-tab{
-    background:#4b5563;
-    color:#d1d5db;
-    font-size:12px;
-    font-weight:600;
-    padding:8px 18px;
-    border-radius:4px 4px 0 0;
-    cursor:pointer;
-  }
-  .display-tab.active{
-    background:#fff;
-    color:var(--text);
-  }
-  .display-tab-add{
-    background:transparent;
-    color:#9ca3af;
-    font-size:16px;
-    font-weight:700;
-    padding:6px 10px;
-    cursor:pointer;
-  }
-</style>
+    .status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+
+    .status-pill.active {
+      background: #fee2e2;
+      color: var(--red);
+    }
+
+    .status-pill.cleared {
+      background: #dcfce7;
+      color: var(--green);
+    }
+
+    /* MTBF/MTTR shift timeline */
+    .mttr-stage-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .mttr-label {
+      width: 76px;
+      font-size: 13.5px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .mttr-track {
+      position: relative;
+      flex: 1;
+      height: 20px;
+      background: var(--green);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .mttr-down-block {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      background: var(--red);
+    }
+
+    .mttr-summary {
+      width: 190px;
+      flex-shrink: 0;
+      font-size: 13px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .mttr-summary b {
+      font-weight: 700;
+    }
+
+    .mttr-axis {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--gray);
+      margin: 2px 200px 4px 86px;
+    }
+
+    .mttr-buffer-block {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      background: #cbd5e1;
+    }
+
+    .mttr-legend {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 14px;
+      margin-bottom: 4px;
+      font-size: 12.5px;
+      color: var(--gray);
+      margin-left: 86px;
+      margin-right: 200px;
+      width: 100%;
+      max-width: 750px;
+      padding-right: 10px;
+      box-sizing: border-box;
+    }
+
+    .mttr-legend span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .mttr-legend i {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    /* Layout Grid with Sidebar */
+    .dashboard-container {
+      flex: 1;
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .main-content {
+      flex: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .main-content .row:nth-child(3),
+    .main-content .row:nth-child(4),
+    .main-content .row:nth-child(5) {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .main-content .row:nth-child(3) .card,
+    .main-content .row:nth-child(4) .card,
+    .main-content .row:nth-child(5) .card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .sidebar {
+      flex: 1;
+      min-width: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar .card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0;
+    }
+
+    .err-log-container {
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+
+    /* Radar Chart Styles */
+    #radarChartSvg text {
+      font-family: 'Inter', "Segoe UI", Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      fill: var(--text);
+      cursor: default;
+    }
+    .radar-axis-line {
+      stroke: var(--border);
+      stroke-width: 1.2px;
+    }
+    .radar-grid-polygon {
+      stroke: #d1d5db;
+      stroke-width: 1px;
+      fill: none;
+    }
+    .radar-grid-polygon.outer {
+      stroke: var(--gray);
+    }
+    .radar-data-polygon {
+      fill: rgba(13, 148, 136, 0.18);
+      stroke: var(--teal);
+      stroke-width: 2.5px;
+      transition: stroke-width 0.2s ease, fill 0.2s ease;
+    }
+    .radar-data-polygon:hover {
+      fill: rgba(13, 148, 136, 0.26);
+      stroke-width: 3.5px;
+    }
+    .radar-vertex {
+      fill: var(--teal);
+      stroke: #fff;
+      stroke-width: 1.5px;
+      cursor: pointer;
+      transition: r 0.15s ease, fill 0.15s ease;
+    }
+    .radar-vertex:hover {
+      r: 7.5px;
+      fill: var(--teal-dark);
+    }
+    .radar-value-label {
+      font-size: 11px;
+      font-weight: 700;
+      fill: var(--teal-dark) !important;
+    }
+
+    /* Excel-style display tab strip, dark gray, pinned to the very bottom */
+    .display-tabs {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 40px;
+      background: #374151;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      padding: 0 10px;
+      z-index: 101;
+    }
+
+    .display-tab {
+      background: #4b5563;
+      color: #d1d5db;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+    }
+
+    .display-tab.active {
+      background: #fff;
+      color: var(--text);
+    }
+
+    .display-tab-add {
+      background: transparent;
+      color: #9ca3af;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="header">Manufacturing KPI Dashboard — Product Line A</div>
+  <div class="header">Manufacturing KPI Dashboard — Product Line A</div>
 
-<!-- ORIGINAL TOP ROW (cost card removed) -->
-<div class="row">
-  <div class="card">
-    <div class="card-title">Total Approved Units</div>
-    <div class="big-number">43,927</div>
-  </div>
-  <div class="card">
-    <div class="card-title">Total Defects</div>
-    <div class="big-number">7,074</div>
-  </div>
-  <div class="card">
-    <div class="card-title">Defect %</div>
-    <div class="big-number" style="color:var(--yellow);">14%</div>
-  </div>
-  <div class="card" style="flex:1.6;">
-    <div class="card-title">Plan Achieve %</div>
-    <div class="split-card">
-      <div class="sub-list">
-        <div class="sub-row"><span>Run time (Hrs)</span><span class="val">571</span></div>
-        <div class="sub-row"><span>Lost Time (Hrs)</span><span class="val">115</span></div>
-        <div class="sub-row"><span>Average UPH</span><span class="val">93</span></div>
-      </div>
-      <div class="split-big">69%</div>
-    </div>
-  </div>
-  <div class="card" style="flex:1.6;">
-    <div class="card-title">OEE % Analysis</div>
-    <div class="split-card">
-      <div class="sub-list">
-        <div class="sub-row"><span>Availability</span><span class="val yellow">83%</span></div>
-        <div class="sub-row"><span>Performance</span><span class="val yellow">81%</span></div>
-        <div class="sub-row"><span>Quality</span><span class="val yellow">86%</span></div>
-      </div>
-      <div class="split-big">58%</div>
-    </div>
-  </div>
-</div>
-
-<!-- 5 NEW HIGH PRIORITY CARDS -->
-<div class="row">
-  <div class="card">
-    <div class="mini-title">Bottleneck Machine</div>
-    <div class="bottleneck-stage">Machine 3</div>
-    <div class="bottleneck-sub">Cycle Time: 58s (highest)</div>
-  </div>
-
-  <div class="card" style="flex:1.6;">
-    <div class="mini-title">First Pass Yield by Machine</div>
-    <div class="fpy-strip">
-      <div class="fpy-item"><div class="label">Machine 1</div><div class="val good">98%</div></div>
-      <div class="fpy-item"><div class="label">Machine 2</div><div class="val good">95%</div></div>
-      <div class="fpy-item"><div class="label">Machine 3</div><div class="val bad">89%</div></div>
-      <div class="fpy-item"><div class="label">Machine 4</div><div class="val good">97%</div></div>
-      <div class="fpy-item"><div class="label">Machine 5</div><div class="val good">99%</div></div>
-    </div>
-  </div>
-
-  <div class="card" style="flex:0.5;">
-    <div class="mini-title">Active Alarms</div>
-    <div class="alarm-number">2</div>
-  </div>
-
-  <div class="card" style="flex:2.3;">
-    <div class="mini-title">Machine Utilization (Run / Starved / Blocked)</div>
-    <div class="util-row">
-      <div class="util-stage"><div class="util-label">Machine 1</div><div class="util-bar"><div class="seg-run" style="width:82%"></div><div class="seg-starved" style="width:10%"></div><div class="seg-blocked" style="width:8%"></div></div></div>
-      <div class="util-stage"><div class="util-label">Machine 2</div><div class="util-bar"><div class="seg-run" style="width:70%"></div><div class="seg-starved" style="width:20%"></div><div class="seg-blocked" style="width:10%"></div></div></div>
-      <div class="util-stage"><div class="util-label">Machine 3</div><div class="util-bar"><div class="seg-run" style="width:60%"></div><div class="seg-starved" style="width:15%"></div><div class="seg-blocked" style="width:25%"></div></div></div>
-      <div class="util-stage"><div class="util-label">Machine 4</div><div class="util-bar"><div class="seg-run" style="width:75%"></div><div class="seg-starved" style="width:5%"></div><div class="seg-blocked" style="width:20%"></div></div></div>
-      <div class="util-stage"><div class="util-label">Machine 5</div><div class="util-bar"><div class="seg-run" style="width:88%"></div><div class="seg-starved" style="width:8%"></div><div class="seg-blocked" style="width:4%"></div></div></div>
-    </div>
-    <div class="legend">
-      <span><i style="background:var(--teal);"></i>Running</span>
-      <span><i style="background:#cbd5e1;"></i>Starved</span>
-      <span><i style="background:var(--yellow);"></i>Blocked</span>
-    </div>
-  </div>
-</div>
-
-<!-- HOURLY PRODUCTION - full width row of its own -->
-<div class="row">
-  <div class="card">
-    <div style="display:flex; gap:14px;">
-      <div style="flex:0.6; min-width:0;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div class="mini-title" style="margin-bottom:0; font-size:12.5px;">Production vs Target — Interval Tracking (incl. Overtime)</div>
-          <div style="text-align:right;">
-            <div style="font-size:10.5px; color:var(--gray); font-weight:600; text-transform:uppercase; letter-spacing:.3px;">Produced Today</div>
-            <div id="dailyTotal" style="font-size:22px; font-weight:700; color:var(--text);">34<span style="font-size:15px; color:var(--gray); font-weight:600;">/100</span></div>
+  <div class="dashboard-container">
+    <div class="main-content">
+      <!-- ORIGINAL TOP ROW -->
+      <div class="row">
+        <div class="card">
+          <div class="card-title">Total Approved Units</div>
+          <div class="big-number">43,927</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Total Defects</div>
+          <div class="big-number">7,074</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Defect %</div>
+          <div class="big-number" style="color:var(--yellow);">14%</div>
+        </div>
+        <div class="card" style="flex:1.6;">
+          <div class="card-title">Plan Achieve %</div>
+          <div class="split-card">
+            <div class="sub-list">
+              <div class="sub-row"><span>Run time (Hrs)</span><span class="val">571</span></div>
+              <div class="sub-row"><span>Lost Time (Hrs)</span><span class="val">115</span></div>
+              <div class="sub-row"><span>Average UPH</span><span class="val">93</span></div>
+            </div>
+            <div id="planAchieveBigVal" class="split-big">69%</div>
           </div>
         </div>
-        <div class="hourly-chart" id="hourlyChart"></div>
-        <div class="hourly-legend">
-          <span><i style="background:var(--green);"></i>Produced</span>
-          <span><i style="background:var(--yellow);"></i>Remaining (current hour)</span>
-          <span><i style="background:var(--red);"></i>Shortfall (closed hour)</span>
-          <span><i style="background:#d1d5db;"></i>Not started</span>
-        </div>
-      </div>
-      <div class="empty-zone" style="margin-top:0; flex:0.4; width:auto; min-height:auto; align-self:stretch;">reserved</div>
-    </div>
-  </div>
-</div>
-
-<!-- ERROR STRIP - full width row, matching production strip -->
-<div class="row">
-  <div class="card">
-    <div style="display:flex; gap:14px;">
-      <div style="flex:0.6; min-width:0;">
-        <div class="mini-title" style="font-size:12.5px;">Hourly Error Pattern (count + within-hour timing)</div>
-        <div style="display:flex; gap:8px;">
-          <div id="errLabelSpace" style="width:70px; flex-shrink:0; display:flex; flex-direction:column; justify-content:flex-end; gap:6px; padding-bottom:34px;">
-            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 1</div>
-            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 2</div>
-            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 3</div>
-            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 4</div>
-            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 5</div>
+        <div class="card" style="flex:1.6;">
+          <div class="card-title">OEE % Analysis</div>
+          <div class="split-card">
+            <div class="sub-list">
+              <div class="sub-row"><span>Availability</span><span id="oeeAvailabilityVal" class="val yellow">83%</span></div>
+              <div class="sub-row"><span>Performance</span><span id="oeePerformanceVal" class="val yellow">81%</span></div>
+              <div class="sub-row"><span>Quality</span><span id="oeeQualityVal" class="val yellow">86%</span></div>
+            </div>
+            <div class="split-big">58%</div>
           </div>
-          <div class="err-chart" id="errChart"></div>
-        </div>
-        <div class="err-legend">
-          <span><i style="background:#ef4444;"></i>Machine error</span>
-          <span><i style="background:#ec4899;"></i>Human error</span>
-          <span><i style="background:#a855f7;"></i>Other / unusual</span>
         </div>
       </div>
-      <div class="empty-zone" style="margin-top:0; flex:0.4; width:auto; min-height:auto; align-self:stretch;">reserved</div>
+
+      <!-- 5 NEW HIGH PRIORITY CARDS -->
+      <div class="row">
+        <div class="card">
+          <div class="mini-title">Bottleneck Machine</div>
+          <div class="bottleneck-stage">Machine 3</div>
+          <div class="bottleneck-sub">Cycle Time: 58s (highest)</div>
+        </div>
+
+        <div class="card" style="flex:1.6;">
+          <div class="mini-title">First Pass Yield by Machine</div>
+          <div class="fpy-strip">
+            <div class="fpy-item">
+              <div class="label">Machine 1</div>
+              <div class="val good">98%</div>
+            </div>
+            <div class="fpy-item">
+              <div class="label">Machine 2</div>
+              <div class="val good">95%</div>
+            </div>
+            <div class="fpy-item">
+              <div class="label">Machine 3</div>
+              <div class="val bad">89%</div>
+            </div>
+            <div class="fpy-item">
+              <div class="label">Machine 4</div>
+              <div class="val good">97%</div>
+            </div>
+            <div class="fpy-item">
+              <div class="label">Machine 5</div>
+              <div class="val good">99%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="flex:0.5;">
+          <div class="mini-title">Active Alarms</div>
+          <div class="alarm-number">2</div>
+        </div>
+
+        <div class="card" style="flex:2.3;">
+          <div class="mini-title">Machine Utilization (Run / Starved / Blocked)</div>
+          <div class="util-row">
+            <div class="util-stage">
+              <div class="util-label">Machine 1</div>
+              <div class="util-bar">
+                <div class="seg-run" style="width:82%"></div>
+                <div class="seg-starved" style="width:10%"></div>
+                <div class="seg-blocked" style="width:8%"></div>
+              </div>
+            </div>
+            <div class="util-stage">
+              <div class="util-label">Machine 2</div>
+              <div class="util-bar">
+                <div class="seg-run" style="width:70%"></div>
+                <div class="seg-starved" style="width:20%"></div>
+                <div class="seg-blocked" style="width:10%"></div>
+              </div>
+            </div>
+            <div class="util-stage">
+              <div class="util-label">Machine 3</div>
+              <div class="util-bar">
+                <div class="seg-run" style="width:60%"></div>
+                <div class="seg-starved" style="width:15%"></div>
+                <div class="seg-blocked" style="width:25%"></div>
+              </div>
+            </div>
+            <div class="util-stage">
+              <div class="util-label">Machine 4</div>
+              <div class="util-bar">
+                <div class="seg-run" style="width:75%"></div>
+                <div class="seg-starved" style="width:5%"></div>
+                <div class="seg-blocked" style="width:20%"></div>
+              </div>
+            </div>
+            <div class="util-stage">
+              <div class="util-label">Machine 5</div>
+              <div class="util-bar">
+                <div class="seg-run" style="width:88%"></div>
+                <div class="seg-starved" style="width:8%"></div>
+                <div class="seg-blocked" style="width:4%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="legend">
+            <span><i style="background:var(--teal);"></i>Running</span>
+            <span><i style="background:#cbd5e1;"></i>Starved</span>
+            <span><i style="background:var(--yellow);"></i>Blocked</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOURLY PRODUCTION -->
+      <div class="row">
+        <div class="card" style="flex:4; border:2px dashed var(--border); padding-bottom:4px;">
+          <div class="mini-title" style="font-size:12.5px; margin-bottom:0;">Cycle-Time Analysis</div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; min-height:0; width:100%;">
+            <svg id="cycleTimeSvg" viewBox="0 0 600 180" width="100%" height="100%" style="display: block;">
+              <!-- Y-Axis Title -->
+              <text x="40" y="9" font-size="8px" font-weight="600" fill="#6b7280" text-anchor="start">Cycle Time
+                (s)</text>
+
+              <!-- Grid Lines and Y-Axis Labels -->
+              <line x1="40" y1="15" x2="580" y2="15" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,2" />
+              <text x="32" y="18" font-size="8px" fill="#9ca3af" text-anchor="end">100</text>
+
+              <line x1="40" y1="28" x2="580" y2="28" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="31" font-size="8px" fill="#9ca3af" text-anchor="end">90</text>
+
+              <line x1="40" y1="41" x2="580" y2="41" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="44" font-size="8px" fill="#9ca3af" text-anchor="end">80</text>
+
+              <line x1="40" y1="54" x2="580" y2="54" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="57" font-size="8px" fill="#9ca3af" text-anchor="end">70</text>
+
+              <line x1="40" y1="67" x2="580" y2="67" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="70" font-size="8px" fill="#9ca3af" text-anchor="end">60</text>
+
+              <line x1="40" y1="80" x2="580" y2="80" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,2" />
+              <text x="32" y="83" font-size="8px" fill="#9ca3af" text-anchor="end">50</text>
+
+              <line x1="40" y1="93" x2="580" y2="93" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="96" font-size="8px" fill="#9ca3af" text-anchor="end">40</text>
+
+              <line x1="40" y1="106" x2="580" y2="106" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="109" font-size="8px" fill="#9ca3af" text-anchor="end">30</text>
+
+              <line x1="40" y1="119" x2="580" y2="119" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="122" font-size="8px" fill="#9ca3af" text-anchor="end">20</text>
+
+              <line x1="40" y1="132" x2="580" y2="132" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="135" font-size="8px" fill="#9ca3af" text-anchor="end">10</text>
+
+              <line x1="40" y1="145" x2="580" y2="145" stroke="#9ca3af" stroke-width="1" />
+              <text x="32" y="148" font-size="8px" fill="#9ca3af" text-anchor="end">0</text>
+
+              <!-- Vertical Grid Lines and X-Axis ticks alignment -->
+              <line x1="40" y1="15" x2="40" y2="145" stroke="#9ca3af" stroke-width="1" />
+              <line x1="130" y1="15" x2="130" y2="145" stroke="#f3f4f6" stroke-width="1" />
+              <line x1="220" y1="15" x2="220" y2="145" stroke="#f3f4f6" stroke-width="1" />
+              <line x1="310" y1="15" x2="310" y2="145" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,2" />
+              <line x1="400" y1="15" x2="400" y2="145" stroke="#f3f4f6" stroke-width="1" />
+              <line x1="490" y1="15" x2="490" y2="145" stroke="#f3f4f6" stroke-width="1" />
+              <line x1="580" y1="15" x2="580" y2="145" stroke="#f3f4f6" stroke-width="1" />
+
+              <!-- X-Axis Labels and Ticks -->
+              <line x1="40" y1="145" x2="40" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="40" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">8:20</text>
+
+              <line x1="130" y1="145" x2="130" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="130" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">10:20</text>
+
+              <line x1="220" y1="145" x2="220" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="220" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">13:00</text>
+
+              <line x1="310" y1="145" x2="310" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="310" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">15:10</text>
+
+              <line x1="400" y1="145" x2="400" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="400" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">17:20</text>
+
+              <line x1="490" y1="145" x2="490" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="490" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">19:20</text>
+
+              <line x1="580" y1="145" x2="580" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="580" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">21:20</text>
+
+              <!-- Legend Group inside SVG -->
+              <g transform="translate(240, 172)">
+                <circle cx="0" cy="0" r="3" fill="#0d9488" />
+                <text x="7" y="3" font-size="8px" font-weight="600" fill="#6b7280">M1</text>
+                <circle cx="30" cy="0" r="3" fill="#3b82f6" />
+                <text x="37" y="3" font-size="8px" font-weight="600" fill="#6b7280">M2</text>
+                <circle cx="60" cy="0" r="3" fill="#ec4899" />
+                <text x="67" y="3" font-size="8px" font-weight="600" fill="#6b7280">M3</text>
+                <circle cx="90" cy="0" r="3" fill="#f59e0b" />
+                <text x="97" y="3" font-size="8px" font-weight="600" fill="#6b7280">M4</text>
+                <circle cx="120" cy="0" r="3" fill="#8b5cf6" />
+                <text x="127" y="3" font-size="8px" font-weight="600" fill="#6b7280">M5</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="card" style="flex:6;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div class="mini-title" style="margin-bottom:0; font-size:12.5px;">Production vs Target — Interval Tracking
+              (incl. Overtime)</div>
+            <div style="text-align:right;">
+              <div
+                style="font-size:10.5px; color:var(--gray); font-weight:600; text-transform:uppercase; letter-spacing:.3px;">
+                Produced Today</div>
+              <div id="dailyTotal" style="font-size:22px; font-weight:700; color:var(--text);">34<span
+                  style="font-size:15px; color:var(--gray); font-weight:600;">/100</span></div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:center; width:100%; flex:1; min-height:0; align-items:center;">
+            <div style="display:flex; gap:8px; max-width:750px; width:100%;">
+              <div style="width:70px; flex-shrink:0;"></div>
+              <div class="hourly-chart" id="hourlyChart" style="flex:1;"></div>
+            </div>
+          </div>
+          <div class="hourly-legend">
+            <span><i style="background:var(--green);"></i>Produced</span>
+            <span><i style="background:var(--yellow);"></i>Remaining (current hour)</span>
+            <span><i style="background:var(--red);"></i>Shortfall (closed hour)</span>
+            <span><i style="background:#d1d5db;"></i>Not started</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ERROR STRIP -->
+      <div class="row">
+        <div class="card" style="flex:4; border:2px dashed var(--border); padding-bottom:4px;">
+          <div class="mini-title" style="font-size:12.5px; margin-bottom:0;">Cycle Time Energy Consumption</div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; min-height:0; width:100%;">
+            <svg id="energySvg" viewBox="0 0 600 180" width="100%" height="100%" style="display: block;">
+              <!-- Y-Axis Title -->
+              <text x="40" y="9" font-size="8px" font-weight="600" fill="#6b7280" text-anchor="start">Energy (kW)</text>
+
+              <!-- Grid Lines and Y-Axis Labels -->
+              <line x1="40" y1="15" x2="580" y2="15" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,2" />
+              <text x="32" y="18" font-size="8px" fill="#9ca3af" text-anchor="end">50</text>
+
+              <line x1="40" y1="28" x2="580" y2="28" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="31" font-size="8px" fill="#9ca3af" text-anchor="end">45</text>
+
+              <line x1="40" y1="41" x2="580" y2="41" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="44" font-size="8px" fill="#9ca3af" text-anchor="end">40</text>
+
+              <line x1="40" y1="54" x2="580" y2="54" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="57" font-size="8px" fill="#9ca3af" text-anchor="end">35</text>
+
+              <line x1="40" y1="67" x2="580" y2="67" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="70" font-size="8px" fill="#9ca3af" text-anchor="end">30</text>
+
+              <line x1="40" y1="80" x2="580" y2="80" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,2" />
+              <text x="32" y="83" font-size="8px" fill="#9ca3af" text-anchor="end">25</text>
+
+              <line x1="40" y1="93" x2="580" y2="93" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="96" font-size="8px" fill="#9ca3af" text-anchor="end">20</text>
+
+              <line x1="40" y1="106" x2="580" y2="106" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="109" font-size="8px" fill="#9ca3af" text-anchor="end">15</text>
+
+              <line x1="40" y1="119" x2="580" y2="119" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="122" font-size="8px" fill="#9ca3af" text-anchor="end">10</text>
+
+              <line x1="40" y1="132" x2="580" y2="132" stroke="#f3f4f6" stroke-width="1" />
+              <text x="32" y="135" font-size="8px" fill="#9ca3af" text-anchor="end">5</text>
+
+              <line x1="40" y1="145" x2="580" y2="145" stroke="#9ca3af" stroke-width="1" />
+              <text x="32" y="148" font-size="8px" fill="#9ca3af" text-anchor="end">0</text>
+
+              <!-- Vertical Grid Lines and X-Axis ticks alignment -->
+              <line x1="40" y1="15" x2="40" y2="145" stroke="#9ca3af" stroke-width="1" />
+              <line x1="130" y1="15" x2="130" y2="145" stroke="#f3f4f6" stroke-width="1" />
+              <line x1="220" y1="15" x2="220" y2="145" stroke="#f3f4f6" stroke-width="1" />
+              <line x1="310" y1="15" x2="310" y2="145" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,2" />
+              <line x1="400" y1="15" x2="400" y2="145" stroke="#f3f4f6" stroke-width="1" />
+              <line x1="490" y1="15" x2="490" y2="145" stroke="#f3f4f6" stroke-width="1" />
+              <line x1="580" y1="15" x2="580" y2="145" stroke="#f3f4f6" stroke-width="1" />
+
+              <!-- X-Axis Labels and Ticks -->
+              <line x1="40" y1="145" x2="40" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="40" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">8:20</text>
+
+              <line x1="130" y1="145" x2="130" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="130" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">10:20</text>
+
+              <line x1="220" y1="145" x2="220" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="220" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">13:00</text>
+
+              <line x1="310" y1="145" x2="310" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="310" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">15:10</text>
+
+              <line x1="400" y1="145" x2="400" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="400" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">17:20</text>
+
+              <line x1="490" y1="145" x2="490" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="490" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">19:20</text>
+
+              <line x1="580" y1="145" x2="580" y2="149" stroke="#9ca3af" stroke-width="1" />
+              <text x="580" y="158" font-size="8px" fill="#9ca3af" text-anchor="middle">21:20</text>
+
+              <!-- Legend Group inside SVG -->
+              <g transform="translate(240, 172)">
+                <circle cx="0" cy="0" r="3" fill="#0d9488" />
+                <text x="7" y="3" font-size="8px" font-weight="600" fill="#6b7280">M1</text>
+                <circle cx="30" cy="0" r="3" fill="#3b82f6" />
+                <text x="37" y="3" font-size="8px" font-weight="600" fill="#6b7280">M2</text>
+                <circle cx="60" cy="0" r="3" fill="#ec4899" />
+                <text x="67" y="3" font-size="8px" font-weight="600" fill="#6b7280">M3</text>
+                <circle cx="90" cy="0" r="3" fill="#f59e0b" />
+                <text x="97" y="3" font-size="8px" font-weight="600" fill="#6b7280">M4</text>
+                <circle cx="120" cy="0" r="3" fill="#8b5cf6" />
+                <text x="127" y="3" font-size="8px" font-weight="600" fill="#6b7280">M5</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="card" style="flex:6;">
+          <div class="mini-title" style="font-size:12.5px; margin-bottom:14px;">Hourly Error Pattern (count + within-hour timing)</div>
+          <div style="display:flex; justify-content:center; width:100%; flex:1; min-height:0; align-items:center;">
+            <div style="display:flex; gap:8px; max-width:750px; width:100%; margin-top:10px;">
+              <div id="errLabelSpace" style="width:70px; flex-shrink:0; display:flex; flex-direction:column;">
+                <div style="height:24px;"></div>
+                <div class="err-row-label">Machine 1</div>
+                <div class="err-row-label">Machine 2</div>
+                <div class="err-row-label">Machine 3</div>
+                <div class="err-row-label">Machine 4</div>
+                <div class="err-row-label">Machine 5</div>
+                <div style="height:18px;"></div>
+              </div>
+              <div class="err-chart" id="errChart" style="flex:1;"></div>
+            </div>
+          </div>
+          <div class="err-legend">
+            <span><i style="background:#ef4444;"></i>Machine error</span>
+            <span><i style="background:#ec4899;"></i>Human error</span>
+            <span><i style="background:#a855f7;"></i>Other / unusual</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MTBF / MTTR TIMELINE -->
+      <div class="row">
+        <div class="card" style="flex: 1;">
+          <div class="mini-title" style="font-size:12.5px;">MTBF / MTTR — Shift Timeline (8:20 – 19:20)</div>
+          <div style="display:flex; flex-direction:column; justify-content:center; width:100%; flex:1; min-height:0; align-items:center;">
+            <div style="max-width:750px; width:100%; padding-right:10px;">
+              <div class="mttr-axis">
+                <span>8:20</span><span>10:20</span><span>12:20</span><span>14:20</span><span>16:20</span><span>18:20</span><span>19:20</span>
+              </div>
+              <div id="mttrRows"></div>
+            </div>
+            <div class="mttr-legend">
+              <span><i style="background:var(--green);"></i>Running</span>
+              <span><i style="background:var(--red);"></i>Down (unplanned)</span>
+              <span><i style="background:#cbd5e1;"></i>Buffer</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="flex: 1; display: flex; flex-direction: column; position: relative;">
+          <div class="mini-title" style="font-size:12.5px; margin-bottom: 4px;">Overall Line Health</div>
+          <div style="flex: 1; display: flex; align-items: center; gap: 16px; min-height: 0; position: relative; padding: 4px 0;">
+            <!-- Left Column: Radar Chart -->
+            <div style="flex: 1.1; height: 100%; display: flex; align-items: center; justify-content: center; min-width: 180px; position: relative;">
+              <svg id="radarChartSvg" viewBox="0 0 320 320" style="width: 100%; height: 100%; max-height: 220px; display: block; overflow: visible;">
+                <!-- Dynamic elements generated by script -->
+              </svg>
+              <div id="radarTooltip" style="position: absolute; display: none; background: rgba(31, 41, 55, 0.95); color: #fff; padding: 6px 10px; border-radius: 4px; font-size: 11px; pointer-events: none; z-index: 10; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); font-weight: 500; white-space: nowrap; transform: translate(-50%, -100%); margin-top: -8px; transition: opacity 0.15s ease;"></div>
+            </div>
+            <!-- Right Column: KPI Details Grid -->
+            <div id="radarKpisGrid" style="flex: 1.9; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 16px; align-content: center; height: 100%; padding-left: 16px; border-left: 1px solid var(--border);">
+              <!-- Populated dynamically by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="card">
+        <div class="mini-title"
+          style="font-size:12.5px; border-bottom: 2px solid var(--teal); padding-bottom: 6px; margin-bottom: 8px;">Live
+          Error / Alarm Log</div>
+        <div class="err-log-container">
+          <table class="err-log-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Machine</th>
+                <th>Error</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="errLogBody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- BOTTOM TASKBAR-STYLE PANEL: MTBF/MTTR (left) + Live Error Log (right) -->
-<div class="bottom-bar">
-  <div class="card" style="flex:1.4;">
-    <div class="mini-title" style="font-size:12.5px;">MTBF / MTTR — Shift Timeline (9:20 – 19:20)</div>
-    <div class="mttr-axis"><span>9:20</span><span>11:20</span><span>13:20</span><span>15:20</span><span>17:20</span><span>19:20</span></div>
-    <div id="mttrRows"></div>
-    <div class="mttr-legend">
-      <span><i style="background:var(--green);"></i>Running</span>
-      <span><i style="background:var(--red);"></i>Down (width = repair time)</span>
-    </div>
+  <!-- DISPLAY SWITCHER TABS - Excel sheet-tab style, pinned to the very bottom -->
+  <div class="display-tabs">
+    <div class="display-tab active">Display 1</div>
+    <div class="display-tab">Display 2</div>
+    <div class="display-tab-add">+</div>
   </div>
-  <div class="card" style="flex:1;">
-    <div class="mini-title" style="font-size:12.5px;">Live Error / Alarm Log</div>
-    <table class="err-log-table">
-      <thead>
-        <tr><th>Time</th><th>Machine</th><th>Error</th><th>Status</th></tr>
-      </thead>
-      <tbody id="errLogBody"></tbody>
-    </table>
-  </div>
-</div>
 
-<!-- DISPLAY SWITCHER TABS - Excel sheet-tab style, pinned to the very bottom -->
-<div class="display-tabs">
-  <div class="display-tab active">Display 1</div>
-  <div class="display-tab">Display 2</div>
-  <div class="display-tab-add">+</div>
-</div>
+  <script>
+    const hours = [
+      { label: "8:20–10:20", target: 20, produced: 20, status: "done" },
+      { label: "10:20–13:00", target: 25, produced: 18, status: "done" },
+      { label: "13:00–15:10", target: 25, produced: 10, status: "current" },
+      { label: "15:10–17:20", target: 20, produced: 0, status: "future" },
+      { label: "17:20–19:20 (OT)", target: 20, produced: 0, status: "future" },
+      { label: "19:20–21:20 (OT)", target: 20, produced: 0, status: "future" }
+    ];
 
-<script>
-const hours = [
-  {label:"8:20–10:20", target:20, produced:20, status:"done"},
-  {label:"10:20–13:00", target:25, produced:18, status:"done"},
-  {label:"13:00–15:10", target:25, produced:10, status:"current"},
-  {label:"15:10–17:20", target:20, produced:0,  status:"future"},
-  {label:"17:20–19:20 (OT)", target:20, produced:0, status:"future"},
-  {label:"19:20–21:20 (OT)", target:20, produced:0, status:"future"}
-];
+    const hourlyChart = document.getElementById('hourlyChart');
+    const dailyTarget = 130;
+    let cumulativeProduced = 0;
 
-const hourlyChart = document.getElementById('hourlyChart');
-const dailyTarget = 130;
-let cumulativeProduced = 0;
+    hours.forEach(h => {
+      const pct = Math.min(100, (h.produced / h.target) * 100);
+      const remaining = 100 - pct;
+      if (h.status !== 'future') cumulativeProduced += h.produced;
 
-hours.forEach(h => {
-  const pct = Math.min(100, (h.produced / h.target) * 100);
-  const remaining = 100 - pct;
-  if(h.status !== 'future') cumulativeProduced += h.produced;
+      const col = document.createElement('div');
+      col.className = 'hour-col';
 
-  const col = document.createElement('div');
-  col.className = 'hour-col';
+      // Percentage label above the bar
+      const pctLabel = document.createElement('div');
+      if (h.status === 'future') {
+        pctLabel.className = 'hour-pct muted';
+        pctLabel.textContent = '—';
+      } else {
+        pctLabel.textContent = Math.round(pct) + '%';
+        if (pct >= 90) pctLabel.className = 'hour-pct good';
+        else if (pct >= 60 || h.label === "13:00–15:10") pctLabel.className = 'hour-pct warn';
+        else pctLabel.className = 'hour-pct bad';
+      }
 
-  // Percentage label above the bar
-  const pctLabel = document.createElement('div');
-  if(h.status === 'future'){
-    pctLabel.className = 'hour-pct muted';
-    pctLabel.textContent = '—';
-  } else {
-    pctLabel.textContent = Math.round(pct) + '%';
-    if(pct >= 90) pctLabel.className = 'hour-pct good';
-    else if(pct >= 60) pctLabel.className = 'hour-pct warn';
-    else pctLabel.className = 'hour-pct bad';
-  }
+      // Middle container to hold bar and count side-by-side
+      const midContainer = document.createElement('div');
+      midContainer.className = 'hour-mid-container';
 
-  const bar = document.createElement('div');
-  bar.className = 'hour-bar';
+      // barStack to contain pctLabel and bar stacked vertically
+      const barStack = document.createElement('div');
+      barStack.className = 'bar-stack';
+      barStack.appendChild(pctLabel);
 
-  if(h.status !== 'future'){
-    const greenFill = document.createElement('div');
-    greenFill.className = 'hour-fill-green';
-    greenFill.style.height = pct + '%';
+      const bar = document.createElement('div');
+      bar.className = 'hour-bar';
 
-    if(remaining > 0){
-      const topFill = document.createElement('div');
-      topFill.className = 'hour-fill-top ' + (h.status === 'current' ? 'yellow' : 'red');
-      topFill.style.height = remaining + '%';
-      bar.appendChild(topFill);
-    }
-    bar.appendChild(greenFill);
-  }
+      if (h.status !== 'future') {
+        const greenFill = document.createElement('div');
+        greenFill.className = 'hour-fill-green';
+        greenFill.style.height = pct + '%';
 
-  const countLabel = document.createElement('div');
-  countLabel.className = 'hour-count';
-  countLabel.textContent = h.status === 'future' ? '—' : `${h.produced}/${h.target}`;
+        if (remaining > 0) {
+          const topFill = document.createElement('div');
+          topFill.className = 'hour-fill-top ' + (h.status === 'current' ? 'yellow' : 'red');
+          topFill.style.height = remaining + '%';
+          bar.appendChild(topFill);
+        }
+        bar.appendChild(greenFill);
+      }
+      barStack.appendChild(bar);
 
-  const hourLabel = document.createElement('div');
-  hourLabel.className = 'hour-label';
-  hourLabel.textContent = h.label;
+      const countLabel = document.createElement('div');
+      countLabel.className = 'hour-count';
+      if (h.status === 'future') {
+        countLabel.innerHTML = `<span class="produced muted">—</span><span class="divider"></span><span class="target">${h.target}</span>`;
+      } else {
+        let colorClass = 'bad';
+        if (pct >= 90) colorClass = 'good';
+        else if (pct >= 60 || h.label === "13:00–15:10") colorClass = 'warn';
+        
+        let producedText = h.produced;
+        if (h.label === "10:20–13:00") {
+          producedText = `<span style="display: inline-flex; flex-direction: column; align-items: center; line-height: 1;"><span style="font-size: 14px; margin-bottom: -3px; font-weight: 700; height: 8px; display: flex; align-items: center;">*</span><span>${h.produced}</span></span>`;
+        }
+        
+        countLabel.innerHTML = `<span class="produced ${colorClass}">${producedText}</span><span class="divider"></span><span class="target">${h.target}</span>`;
+      }
 
-  col.appendChild(pctLabel);
-  col.appendChild(bar);
-  col.appendChild(countLabel);
-  col.appendChild(hourLabel);
-  hourlyChart.appendChild(col);
-});
+      midContainer.appendChild(barStack);
+      midContainer.appendChild(countLabel);
 
-document.getElementById('dailyTotal').innerHTML =
-  `${cumulativeProduced}<span style="font-size:15px; color:var(--gray); font-weight:600;">/${dailyTarget}</span>`;
+      const hourLabel = document.createElement('div');
+      hourLabel.className = 'hour-label';
+      hourLabel.textContent = h.label;
 
-// ---- Error hourly strip with within-hour timestamp ticks (categorized) ----
-const errHours = [
-  {label:"8:20–10:20", events:[{min:30, cat:"human"}]},
-  {label:"10:20–13:00", events:[{min:4, cat:"machine"}, {min:22, cat:"machine"}, {min:41, cat:"machine"}]},
-  {label:"13:00–15:10", events:[{min:10, cat:"human"}, {min:50, cat:"machine"}]},
-  {label:"15:10–17:20", events:[{min:5, cat:"machine"}, {min:12, cat:"machine"}, {min:18, cat:"other"}, {min:47, cat:"human"}]},
-  {label:"17:20–19:20 (OT)", events:[]},
-  {label:"19:20–21:20 (OT)", events:[]}
-];
-const maxErr = 6; // scale reference for bar height
-const errChart = document.getElementById('errChart');
+      col.appendChild(midContainer);
+      col.appendChild(hourLabel);
+      hourlyChart.appendChild(col);
+    });
 
-errHours.forEach(e => {
-  const count = e.events.length;
-  const col = document.createElement('div');
-  col.className = 'err-col';
+    document.getElementById('dailyTotal').innerHTML =
+      `${cumulativeProduced}<span style="font-size:15px; color:var(--gray); font-weight:600;">/${dailyTarget}</span>`;
 
-  const topLabel = document.createElement('div');
-  topLabel.textContent = count;
-  topLabel.className = 'err-count-top ' + (count <= 1 ? 'good' : count <= 3 ? 'warn' : 'bad');
+    // ---- Error hourly strip with within-hour timestamp ticks (categorized) ----
+    const errHours = [
+      {
+        label: "8:20–10:20",
+        events: [
+          { min: 55, cat: "machine", machine: "Machine 4" }
+        ]
+      },
+      {
+        label: "10:20–13:00",
+        events: [
+          { min: 32, cat: "machine", machine: "Machine 1" },
+          { min: 40, cat: "machine", machine: "Machine 2" },
+          { min: 45, cat: "machine", machine: "Machine 3" }
+        ]
+      },
+      {
+        label: "13:00–15:10",
+        events: [
+          { min: 10, cat: "machine", machine: "Machine 2" },
+          { min: 42, cat: "machine", machine: "Machine 3" }
+        ]
+      },
+      {
+        label: "15:10–17:20",
+        events: [
+          { min: 5, cat: "machine", machine: "Machine 3" },
+          { min: 12, cat: "machine", machine: "Machine 4" },
+          { min: 18, cat: "other", machine: "Machine 5" },
+          { min: 47, cat: "human", machine: "Machine 2" }
+        ]
+      },
+      { label: "17:20–19:20 (OT)", events: [] },
+      { label: "19:20–21:20 (OT)", events: [] }
+    ];
+    const errChart = document.getElementById('errChart');
 
-  const track = document.createElement('div');
-  track.className = 'err-bar-track';
+    errHours.forEach(e => {
+      const count = e.events.length;
+      const col = document.createElement('div');
+      col.className = 'err-col';
 
-  // Minute-level timestamp ticks within the hour (0-60 min mapped left to right), colored by category
-  const minuteTrack = document.createElement('div');
-  minuteTrack.className = 'err-minute-track';
-  e.events.forEach(ev => {
-    const tick = document.createElement('div');
-    tick.className = 'err-tick ' + ev.cat;
-    tick.style.left = `calc(${(ev.min / 60) * 100}% - 1.5px)`;
-    tick.title = `:${String(ev.min).padStart(2,'0')} — ${ev.cat}`;
-    minuteTrack.appendChild(tick);
-  });
+      const topLabel = document.createElement('div');
+      topLabel.textContent = count;
+      topLabel.className = 'err-count-top ' + (count <= 1 ? 'good' : count <= 3 ? 'warn' : 'bad');
+      col.appendChild(topLabel);
 
-  const minuteHint = document.createElement('div');
-  minuteHint.className = 'err-minute-hint';
-  minuteHint.textContent = ':00 – :60';
+      const machines = ["Machine 1", "Machine 2", "Machine 3", "Machine 4", "Machine 5"];
+      machines.forEach(mach => {
+        const minuteTrack = document.createElement('div');
+        minuteTrack.className = 'err-minute-track';
+        const machEvents = e.events.filter(ev => ev.machine === mach);
+        machEvents.forEach(ev => {
+          const tick = document.createElement('div');
+          tick.className = 'err-tick ' + ev.cat;
+          tick.style.left = `calc(${(ev.min / 60) * 100}% - 1.5px)`;
+          tick.title = `${mach} — :${String(ev.min).padStart(2, '0')} — ${ev.cat}`;
+          minuteTrack.appendChild(tick);
+        });
+        col.appendChild(minuteTrack);
+      });
 
-  const hourLabel = document.createElement('div');
-  hourLabel.className = 'err-hour-label';
-  hourLabel.textContent = e.label;
+      const hourLabel = document.createElement('div');
+      hourLabel.className = 'err-hour-label';
+      hourLabel.textContent = e.label;
 
-  col.appendChild(topLabel);
-  col.appendChild(track);
-  col.appendChild(minuteTrack);
-  col.appendChild(minuteHint);
-  col.appendChild(hourLabel);
-  errChart.appendChild(col);
-});
+      col.appendChild(hourLabel);
+      errChart.appendChild(col);
+    });
 
-const shiftStartMin = 9*60+20;   // 9:20
-const shiftEndMin = 19*60+20;    // 19:20
-const shiftTotalMin = shiftEndMin - shiftStartMin; // 600 min
+    const shiftStartMin = 8 * 60 + 20;   // 8:20
+    const shiftEndMin = 19 * 60 + 20;    // 19:20
+    const shiftTotalMin = shiftEndMin - shiftStartMin; // 660 min
 
-// breakdowns given as [startHHMM, endHHMM] per stage
-function toMin(hhmm){ const [h,m] = hhmm.split(':').map(Number); return h*60+m; }
+    // breakdowns given as [startHHMM, endHHMM] per stage
+    function toMin(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
 
-const stageBreakdowns = {
-  "Machine 1": [["10:05","10:20"]],
-  "Machine 2": [["12:00","12:35"], ["16:10","16:25"]],
-  "Machine 3": [["11:40","12:10"], ["15:15","16:45"]],
-  "Machine 4": [["14:00","14:15"]],
-  "Machine 5": []
-};
+    const buffers = [
+      { start: "08:20", end: "08:30" },
+      { start: "13:00", end: "13:10" }
+    ];
+    let totalBufferMin = 0;
+    buffers.forEach(b => {
+      totalBufferMin += (toMin(b.end) - toMin(b.start));
+    });
 
-const mttrRows = document.getElementById('mttrRows');
+    const stageBreakdowns = {
+      "Machine 1": [["10:05", "10:20"]],
+      "Machine 2": [["12:00", "12:35"], ["16:10", "16:25"]],
+      "Machine 3": [["11:40", "12:10"], ["15:15", "16:45"]],
+      "Machine 4": [["14:00", "14:15"]],
+      "Machine 5": []
+    };
 
-Object.entries(stageBreakdowns).forEach(([stage, breakdowns]) => {
-  const row = document.createElement('div');
-  row.className = 'mttr-stage-row';
+    const mttrRows = document.getElementById('mttrRows');
 
-  const label = document.createElement('div');
-  label.className = 'mttr-label';
-  label.textContent = stage;
+    Object.entries(stageBreakdowns).forEach(([stage, breakdowns]) => {
+      const row = document.createElement('div');
+      row.className = 'mttr-stage-row';
 
-  const track = document.createElement('div');
-  track.className = 'mttr-track';
+      const label = document.createElement('div');
+      label.className = 'mttr-label';
+      label.textContent = stage;
 
-  let totalDown = 0;
-  breakdowns.forEach(([s, e]) => {
-    const startMin = toMin(s) - shiftStartMin;
-    const endMin = toMin(e) - shiftStartMin;
-    const dur = endMin - startMin;
-    totalDown += dur;
+      const track = document.createElement('div');
+      track.className = 'mttr-track';
 
-    const block = document.createElement('div');
-    block.className = 'mttr-down-block';
-    block.style.left = (startMin / shiftTotalMin * 100) + '%';
-    block.style.width = (dur / shiftTotalMin * 100) + '%';
-    block.title = `${s}–${e} (${dur} min)`;
-    track.appendChild(block);
-  });
+      // Render buffers
+      buffers.forEach(b => {
+        const startMin = toMin(b.start) - shiftStartMin;
+        const endMin = toMin(b.end) - shiftStartMin;
+        const dur = endMin - startMin;
 
-  const failures = breakdowns.length;
-  const totalUp = shiftTotalMin - totalDown;
-  const mtbf = failures > 0 ? (totalUp / failures) : totalUp;
-  const mttr = failures > 0 ? (totalDown / failures) : 0;
+        const block = document.createElement('div');
+        block.className = 'mttr-buffer-block';
+        block.style.left = (startMin / shiftTotalMin * 100) + '%';
+        block.style.width = (dur / shiftTotalMin * 100) + '%';
+        block.title = `Buffer: ${b.start}–${b.end} (${dur} min)`;
+        track.appendChild(block);
+      });
 
-  const summary = document.createElement('div');
-  summary.className = 'mttr-summary';
-  summary.innerHTML = `<span>MTBF: <b>${(mtbf/60).toFixed(1)}h</b></span><span>MTTR: <b>${mttr.toFixed(0)}m</b></span>`;
+      let totalDown = 0;
+      breakdowns.forEach(([s, e]) => {
+        const startMin = toMin(s) - shiftStartMin;
+        const endMin = toMin(e) - shiftStartMin;
+        const dur = endMin - startMin;
+        totalDown += dur;
 
-  row.appendChild(label);
-  row.appendChild(track);
-  row.appendChild(summary);
-  mttrRows.appendChild(row);
-});
-const errLog = [
-  {time:"13:42", stage:"Machine 3", error:"Mold temperature out of range", status:"active"},
-  {time:"13:10", stage:"Machine 2", error:"Sensor signal dropout", status:"cleared"},
-  {time:"12:05", stage:"Machine 3", error:"Cycle time exceeded threshold", status:"cleared"},
-  {time:"10:52", stage:"Machine 1", error:"Material feed delay", status:"cleared"},
-  {time:"10:15", stage:"Machine 4", error:"Pressure spike detected", status:"active"}
-];
-const errLogBody = document.getElementById('errLogBody');
-errLog.forEach(r => {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
+        const block = document.createElement('div');
+        block.className = 'mttr-down-block';
+        block.style.left = (startMin / shiftTotalMin * 100) + '%';
+        block.style.width = (dur / shiftTotalMin * 100) + '%';
+        block.title = `${s}–${e} (${dur} min)`;
+        track.appendChild(block);
+      });
+
+      const failures = breakdowns.length;
+      const totalUp = (shiftTotalMin - totalBufferMin) - totalDown;
+      const mtbf = failures > 0 ? (totalUp / failures) : totalUp;
+      const mttr = failures > 0 ? (totalDown / failures) : 0;
+
+      const summary = document.createElement('div');
+      summary.className = 'mttr-summary';
+      summary.innerHTML = `<span>MTBF: <b>${(mtbf / 60).toFixed(1)}h</b></span><span>MTTR: <b>${mttr.toFixed(0)}m</b></span>`;
+
+      row.appendChild(label);
+      row.appendChild(track);
+      row.appendChild(summary);
+      mttrRows.appendChild(row);
+    });
+    const errLog = [
+      { time: "17:15", stage: "Machine 2", error: "Human override mismatch", status: "cleared" },
+      { time: "16:47", stage: "Machine 2", error: "Feed speed slow warning", status: "cleared" },
+      { time: "16:18", stage: "Machine 5", error: "Pneumatic pressure drop", status: "active" },
+      { time: "15:12", stage: "Machine 4", error: "Nozzle alignment deviation", status: "cleared" },
+      { time: "14:05", stage: "Machine 4", error: "E-stop triggered manually", status: "cleared" },
+      { time: "13:42", stage: "Machine 3", error: "Mold temperature out of range", status: "active" },
+      { time: "13:10", stage: "Machine 2", error: "Sensor signal dropout", status: "cleared" },
+      { time: "12:05", stage: "Machine 3", error: "Cycle time exceeded threshold", status: "cleared" },
+      { time: "11:45", stage: "Machine 3", error: "Thermal calibration shift", status: "cleared" },
+      { time: "10:52", stage: "Machine 1", error: "Material feed delay", status: "cleared" },
+      { time: "10:15", stage: "Machine 4", error: "Pressure spike detected", status: "active" },
+      { time: "09:55", stage: "Machine 4", error: "Hydraulic fluid low", status: "cleared" },
+      { time: "08:35", stage: "Machine 1", error: "Initial boot self-check fail", status: "cleared" }
+    ];
+    const errLogBody = document.getElementById('errLogBody');
+    errLog.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
     <td>${r.time}</td>
     <td>${r.stage}</td>
     <td>${r.error}</td>
     <td><span class="status-pill ${r.status}">${r.status === 'active' ? 'Active' : 'Cleared'}</span></td>
   `;
-  errLogBody.appendChild(tr);
-});
-</script>
+      errLogBody.appendChild(tr);
+    });
+
+    // ---- Scatter Plot Points Generation ----
+    const machineColors = {
+      "Machine 1": "#0d9488",
+      "Machine 2": "#3b82f6",
+      "Machine 3": "#ec4899",
+      "Machine 4": "#f59e0b",
+      "Machine 5": "#8b5cf6"
+    };
+
+    const cycleTimeSvg = document.getElementById('cycleTimeSvg');
+    const energySvg = document.getElementById('energySvg');
+
+    // Typical values for machines
+    const machineProfiles = {
+      "Machine 1": { cycleMin: 35, cycleMax: 42, energyMin: 15, energyMax: 20 },
+      "Machine 2": { cycleMin: 40, cycleMax: 48, energyMin: 25, energyMax: 30 },
+      "Machine 3": { cycleMin: 50, cycleMax: 58, energyMin: 35, energyMax: 42 }, // Bottleneck & High Energy
+      "Machine 4": { cycleMin: 38, cycleMax: 45, energyMin: 18, energyMax: 24 },
+      "Machine 5": { cycleMin: 30, cycleMax: 38, energyMin: 12, energyMax: 18 }
+    };
+
+    function addSvgCircle(svg, cx, cy, fill, tooltipText) {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", cx);
+      circle.setAttribute("cy", cy);
+      circle.setAttribute("r", "2");
+      circle.setAttribute("fill", fill);
+      circle.setAttribute("opacity", "0.18");
+      circle.style.transition = "r 0.15s ease, opacity 0.15s ease, stroke-width 0.15s ease";
+      circle.style.cursor = "pointer";
+
+      // Add simple tooltip using title element
+      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = tooltipText;
+      circle.appendChild(title);
+
+      // Interactive hover effects
+      circle.addEventListener('mouseenter', () => {
+        circle.setAttribute("r", "4.5");
+        circle.setAttribute("opacity", "1");
+        circle.setAttribute("stroke", "#ffffff");
+        circle.setAttribute("stroke-width", "1");
+      });
+      circle.addEventListener('mouseleave', () => {
+        circle.setAttribute("r", "2");
+        circle.setAttribute("opacity", "0.18");
+        circle.removeAttribute("stroke");
+      });
+
+      svg.appendChild(circle);
+    }
+
+    const machineAverages = {
+      "Machine 1": [],
+      "Machine 2": [],
+      "Machine 3": [],
+      "Machine 4": [],
+      "Machine 5": []
+    };
+
+    hours.forEach((h, intervalIdx) => {
+      if (h.status === 'future') return; // Don't plot future cycles
+
+      const startX = 40 + intervalIdx * 90;
+      const centerOfIntervalX = startX + 45;
+      const numCycles = h.produced;
+
+      const intervalSums = {
+        "Machine 1": { cycle: 0, energy: 0, count: 0 },
+        "Machine 2": { cycle: 0, energy: 0, count: 0 },
+        "Machine 3": { cycle: 0, energy: 0, count: 0 },
+        "Machine 4": { cycle: 0, energy: 0, count: 0 },
+        "Machine 5": { cycle: 0, energy: 0, count: 0 }
+      };
+
+      // Seed-like pseudo-random generator to keep data consistent across refreshes
+      let seed = intervalIdx * 100;
+      function random() {
+        let x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+      }
+
+      for (let i = 0; i < numCycles; i++) {
+        // Distribute points horizontally across the interval
+        const cx = startX + 5 + (i / numCycles) * 80 + random() * 4;
+
+        Object.entries(machineProfiles).forEach(([machine, profile]) => {
+          // Generate realistic cycle time
+          let cycleTime = profile.cycleMin + random() * (profile.cycleMax - profile.cycleMin);
+          
+          // Introduce a random outlier to make the chart interesting!
+          if (random() < 0.03) { // 3% chance
+            cycleTime += 15 + random() * 20; 
+          }
+
+          // Cycle time Y-coordinate: mapping [0s, 100s] to SVG coordinates [145px, 15px]
+          const cycleCy = 145 - (cycleTime / 100) * 130;
+          const cycleTooltip = `${machine}\nCycle: ${i + 1}\nTime: ${cycleTime.toFixed(1)}s\nInterval: ${h.label}`;
+          addSvgCircle(cycleTimeSvg, cx, cycleCy, machineColors[machine], cycleTooltip);
+
+          // Generate realistic energy consumption
+          let energy = profile.energyMin + random() * (profile.energyMax - profile.energyMin);
+          if (random() < 0.03) { // 3% chance
+            energy += 8 + random() * 12;
+          }
+
+          // Energy Y-coordinate: mapping [0 kW, 50 kW] to SVG coordinates [145px, 15px]
+          const energyCy = 145 - (energy / 50) * 130;
+          const energyTooltip = `${machine}\nCycle: ${i + 1}\nEnergy: ${energy.toFixed(1)} kW\nInterval: ${h.label}`;
+          addSvgCircle(energySvg, cx, energyCy, machineColors[machine], energyTooltip);
+
+          // Accumulate sums
+          intervalSums[machine].cycle += cycleTime;
+          intervalSums[machine].energy += energy;
+          intervalSums[machine].count += 1;
+        });
+      }
+
+      // Calculate averages and store coordinates for line plotting
+      Object.keys(machineProfiles).forEach(machine => {
+        const stats = intervalSums[machine];
+        if (stats.count > 0) {
+          const avgCycle = stats.cycle / stats.count;
+          const avgEnergy = stats.energy / stats.count;
+
+          const cycleCy = 145 - (avgCycle / 100) * 130;
+          const energyCy = 145 - (avgEnergy / 50) * 130;
+
+          machineAverages[machine].push({
+            x: centerOfIntervalX,
+            cycleY: cycleCy,
+            cycleVal: avgCycle,
+            energyY: energyCy,
+            energyVal: avgEnergy,
+            intervalLabel: h.label
+          });
+        }
+      });
+    });
+
+    // Helper to generate spline path for SVG
+    function getSplinePath(points, yProp) {
+      if (points.length === 0) return '';
+      if (points.length === 1) return `M ${points[0].x} ${points[0][yProp]}`;
+      if (points.length === 2) {
+        return `M ${points[0].x} ${points[0][yProp]} L ${points[1].x} ${points[1][yProp]}`;
+      }
+      
+      let d = `M ${points[0].x} ${points[0][yProp]}`;
+      for (let i = 0; i < points.length - 1; i++) {
+        const p0 = points[i - 1] || points[i];
+        const p1 = points[i];
+        const p2 = points[i + 1];
+        const p3 = points[i + 2] || p2;
+        
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1[yProp] + (p2[yProp] - p0[yProp]) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2[yProp] - (p3[yProp] - p1[yProp]) / 6;
+        
+        d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2[yProp]}`;
+      }
+      return d;
+    }
+
+    // Render Trend Lines and Interactive Averages
+    Object.entries(machineAverages).forEach(([machine, points]) => {
+      const color = machineColors[machine];
+
+      // 1. Cycle Time Trend Line
+      const cycleD = getSplinePath(points, 'cycleY');
+      if (cycleD) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", cycleD);
+        path.setAttribute("stroke", color);
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("fill", "none");
+        path.setAttribute("opacity", "0.85");
+        path.setAttribute("data-machine", machine);
+        path.classList.add("trend-line");
+        path.style.transition = "stroke-width 0.15s ease, opacity 0.15s ease";
+        cycleTimeSvg.appendChild(path);
+      }
+
+      // 2. Cycle Time Average Dots
+      points.forEach(pt => {
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", pt.x);
+        dot.setAttribute("cy", pt.cycleY);
+        dot.setAttribute("r", "3.5");
+        dot.setAttribute("fill", color);
+        dot.setAttribute("stroke", "#ffffff");
+        dot.setAttribute("stroke-width", "1.5");
+        dot.setAttribute("opacity", "0.95");
+        dot.setAttribute("data-machine", machine);
+        dot.classList.add("trend-dot");
+        dot.style.transition = "r 0.15s ease, stroke-width 0.15s ease, opacity 0.15s ease";
+        dot.style.cursor = "pointer";
+
+        const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+        title.textContent = `${machine} Average\nCycle Time: ${pt.cycleVal.toFixed(1)}s\nInterval: ${pt.intervalLabel}`;
+        dot.appendChild(title);
+        cycleTimeSvg.appendChild(dot);
+      });
+
+      // 3. Energy Trend Line
+      const energyD = getSplinePath(points, 'energyY');
+      if (energyD) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", energyD);
+        path.setAttribute("stroke", color);
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("fill", "none");
+        path.setAttribute("opacity", "0.85");
+        path.setAttribute("data-machine", machine);
+        path.classList.add("trend-line");
+        path.style.transition = "stroke-width 0.15s ease, opacity 0.15s ease";
+        energySvg.appendChild(path);
+      }
+
+      // 4. Energy Average Dots
+      points.forEach(pt => {
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", pt.x);
+        dot.setAttribute("cy", pt.energyY);
+        dot.setAttribute("r", "3.5");
+        dot.setAttribute("fill", color);
+        dot.setAttribute("stroke", "#ffffff");
+        dot.setAttribute("stroke-width", "1.5");
+        dot.setAttribute("opacity", "0.95");
+        dot.setAttribute("data-machine", machine);
+        dot.classList.add("trend-dot");
+        dot.style.transition = "r 0.15s ease, stroke-width 0.15s ease, opacity 0.15s ease";
+        dot.style.cursor = "pointer";
+
+        const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+        title.textContent = `${machine} Average\nEnergy: ${pt.energyVal.toFixed(1)} kW\nInterval: ${pt.intervalLabel}`;
+        dot.appendChild(title);
+        energySvg.appendChild(dot);
+      });
+    });
+
+    // Setup Cross-Chart Highlighting
+    function setupHighlighting() {
+      const allLines = document.querySelectorAll('.trend-line');
+      const allDots = document.querySelectorAll('.trend-dot');
+
+      function highlight(machine) {
+        allLines.forEach(line => {
+          if (line.getAttribute('data-machine') === machine) {
+            line.style.strokeWidth = '3.5';
+            line.style.opacity = '1';
+          } else {
+            line.style.opacity = '0.15';
+          }
+        });
+        allDots.forEach(dot => {
+          if (dot.getAttribute('data-machine') === machine) {
+            dot.setAttribute('r', '5.5');
+            dot.style.strokeWidth = '2';
+            dot.style.opacity = '1';
+          } else {
+            dot.style.opacity = '0.15';
+          }
+        });
+      }
+
+      function reset() {
+        allLines.forEach(line => {
+          line.style.strokeWidth = '2';
+          line.style.opacity = '0.85';
+        });
+        allDots.forEach(dot => {
+          dot.setAttribute('r', '3.5');
+          dot.style.strokeWidth = '1.5';
+          dot.style.opacity = '0.95';
+        });
+      }
+
+      allLines.forEach(line => {
+        const mach = line.getAttribute('data-machine');
+        line.addEventListener('mouseenter', () => highlight(mach));
+        line.addEventListener('mouseleave', reset);
+      });
+
+      allDots.forEach(dot => {
+        const mach = dot.getAttribute('data-machine');
+        dot.addEventListener('mouseenter', () => highlight(mach));
+        dot.addEventListener('mouseleave', reset);
+      });
+    }
+
+    setupHighlighting();
+
+    // ---- Radar Chart Generation ----
+    function renderRadarChart() {
+      // 1. Gather dynamic values from the dashboard elements
+      const availabilityVal = parseFloat(document.getElementById('oeeAvailabilityVal')?.textContent || 83);
+      const performanceVal = parseFloat(document.getElementById('oeePerformanceVal')?.textContent || 81);
+      const qualityVal = parseFloat(document.getElementById('oeeQualityVal')?.textContent || 86);
+      const planAchieveVal = parseFloat(document.getElementById('planAchieveBigVal')?.textContent || 69);
+      
+      // Calculate First Pass Yield (FPY) dynamically
+      const fpyElements = document.querySelectorAll('.fpy-item .val');
+      let fpySum = 0;
+      fpyElements.forEach(el => {
+        fpySum += parseFloat(el.textContent);
+      });
+      const fpyVal = fpyElements.length > 0 ? Math.round(fpySum / fpyElements.length) : 96;
+      const reliabilityVal = 76; // Reliability default
+
+      const metrics = [
+        { name: "Availability", value: availabilityVal },
+        { name: "Performance", value: performanceVal },
+        { name: "Quality", value: qualityVal },
+        { name: "Reliability", value: reliabilityVal },
+        { name: "Plan Achieve %", value: planAchieveVal },
+        { name: "First Pass Yield", value: fpyVal }
+      ];
+
+      const svg = document.getElementById('radarChartSvg');
+      if (!svg) return;
+      svg.innerHTML = ''; // Clear existing contents
+
+      const size = 320;
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const maxRadius = 90; // Maximum radius of the radar (leaves space for labels)
+
+      // Hexagon Angles: -90, -30, 30, 90, 150, 210 degrees
+      const angles = [-Math.PI / 2, -Math.PI / 6, Math.PI / 6, Math.PI / 2, 5 * Math.PI / 6, 7 * Math.PI / 6];
+
+      // Draw grid backgrounds (concentric hexagons at 20, 40, 60, 80, 100)
+      const levels = [20, 40, 60, 80, 100];
+      levels.forEach(level => {
+        const r = maxRadius * (level / 100);
+        let points = [];
+        for (let i = 0; i < 6; i++) {
+          const x = centerX + r * Math.cos(angles[i]);
+          const y = centerY + r * Math.sin(angles[i]);
+          points.push(`${x},${y}`);
+        }
+        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        poly.setAttribute("points", points.join(" "));
+        poly.className.baseVal = "radar-grid-polygon" + (level === 100 ? " outer" : "");
+        svg.appendChild(poly);
+      });
+
+      // Draw axis spokes
+      for (let i = 0; i < 6; i++) {
+        const x = centerX + maxRadius * Math.cos(angles[i]);
+        const y = centerY + maxRadius * Math.sin(angles[i]);
+        
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", centerX);
+        line.setAttribute("y1", centerY);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", y);
+        line.className.baseVal = "radar-axis-line";
+        svg.appendChild(line);
+      }
+
+      // Draw data polygon
+      let dataPoints = [];
+      const coordPoints = [];
+      for (let i = 0; i < 6; i++) {
+        const val = metrics[i].value;
+        const r = maxRadius * (val / 100);
+        const x = centerX + r * Math.cos(angles[i]);
+        const y = centerY + r * Math.sin(angles[i]);
+        dataPoints.push(`${x},${y}`);
+        coordPoints.push({ x, y, val, name: metrics[i].name });
+      }
+
+      const dataPoly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      dataPoly.setAttribute("points", dataPoints.join(" "));
+      dataPoly.className.baseVal = "radar-data-polygon";
+      svg.appendChild(dataPoly);
+
+      // Draw labels
+      const labelOffset = 18; // offset from outer axis
+      for (let i = 0; i < 6; i++) {
+        const xOuter = centerX + (maxRadius + labelOffset) * Math.cos(angles[i]);
+        const yOuter = centerY + (maxRadius + labelOffset) * Math.sin(angles[i]);
+
+        // Adjust text alignment based on position
+        let textAnchor = "middle";
+        let dy = "0.35em";
+
+        if (Math.abs(angles[i] - Math.PI / 2) < 0.01) {
+          // Bottom center
+          textAnchor = "middle";
+          dy = "1.2em";
+        } else if (Math.abs(angles[i] + Math.PI / 2) < 0.01) {
+          // Top center
+          textAnchor = "middle";
+          dy = "-0.7em";
+        } else if (Math.cos(angles[i]) > 0.1) {
+          // Right side
+          textAnchor = "start";
+        } else if (Math.cos(angles[i]) < -0.1) {
+          // Left side
+          textAnchor = "end";
+        }
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", xOuter);
+        text.setAttribute("y", yOuter);
+        text.setAttribute("text-anchor", textAnchor);
+        text.setAttribute("dy", dy);
+        text.textContent = metrics[i].name;
+        svg.appendChild(text);
+      }
+
+      // Draw vertices (points) and value labels next to them
+      const tooltip = document.getElementById('radarTooltip');
+      coordPoints.forEach((pt, i) => {
+        // Point
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", pt.x);
+        circle.setAttribute("cy", pt.y);
+        circle.setAttribute("r", "5");
+        circle.className.baseVal = "radar-vertex";
+        
+        // Show tooltip on hover
+        circle.addEventListener('mouseenter', (e) => {
+          tooltip.innerHTML = `<strong>${pt.name}</strong>: ${pt.val}%`;
+          tooltip.style.display = 'block';
+          
+          // Calculate tooltip position relative to the container
+          const container = svg.parentElement;
+          const rect = circle.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          
+          tooltip.style.left = (rect.left - containerRect.left + (rect.width / 2)) + 'px';
+          tooltip.style.top = (rect.top - containerRect.top) + 'px';
+          tooltip.style.opacity = '1';
+        });
+
+        circle.addEventListener('mouseleave', () => {
+          tooltip.style.display = 'none';
+          tooltip.style.opacity = '0';
+        });
+
+        svg.appendChild(circle);
+
+        // Number labels drawn next to vertex point
+        // Calculate offset direction (away from center)
+        const offsetDist = 13;
+        const numX = pt.x + offsetDist * Math.cos(angles[i]);
+        const numY = pt.y + offsetDist * Math.sin(angles[i]) - 1;
+
+        const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        valueText.setAttribute("x", numX);
+        valueText.setAttribute("y", numY);
+        valueText.setAttribute("text-anchor", "middle");
+        valueText.setAttribute("dy", "0.35em");
+        valueText.className.baseVal = "radar-value-label";
+        valueText.textContent = pt.val;
+        svg.appendChild(valueText);
+      });
+
+      // Populate the KPI grid on the right
+      const grid = document.getElementById('radarKpisGrid');
+      if (grid) {
+        grid.innerHTML = '';
+        metrics.forEach(m => {
+          let colorClass = 'good';
+          if (m.value < 75) colorClass = 'bad';
+          else if (m.value < 90) colorClass = 'warn';
+
+          let valColor = 'var(--green)';
+          if (colorClass === 'warn') valColor = 'var(--yellow)';
+          else if (colorClass === 'bad') valColor = 'var(--red)';
+
+          const item = document.createElement('div');
+          item.style.display = 'flex';
+          item.style.flexDirection = 'column';
+          item.style.justifyContent = 'center';
+          item.style.padding = '4px 8px';
+
+          item.innerHTML = `
+            <span style="font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; white-space: nowrap;">${m.name}</span>
+            <span style="font-size: 26px; font-weight: 700; color: ${valColor}; line-height: 1.1;">${m.value}%</span>
+          `;
+          grid.appendChild(item);
+        });
+      }
+    }
+
+    // Call render function
+    renderRadarChart();
+  </script>
 
 </body>
+
 </html>
