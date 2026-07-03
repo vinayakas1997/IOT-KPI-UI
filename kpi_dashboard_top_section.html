@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Manufacturing KPI Dashboard — Top Section</title>
+<style>
+  :root{
+    --teal:#0d9488;
+    --teal-dark:#0f766e;
+    --yellow:#b8890a;
+    --red:#ef4444;
+    --green:#16a34a;
+    --gray:#6b7280;
+    --border:#e2e5e9;
+    --text:#1f2937;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Segoe UI", Arial, sans-serif;
+    background:#f3f4f6;
+    color:var(--text);
+    font-size:13px;
+    padding:16px;
+  }
+  .header{
+    font-size:17px;
+    font-weight:600;
+    margin-bottom:14px;
+    color:var(--text);
+  }
+  .row{
+    display:flex;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:10px 14px;
+    flex:1;
+    min-width:0;
+  }
+  .card-title{
+    text-align:center;
+    font-size:12px;
+    font-weight:600;
+    color:var(--text);
+    padding-bottom:6px;
+    border-bottom:2px solid var(--teal);
+    margin-bottom:8px;
+  }
+  .big-number{
+    text-align:center;
+    font-size:30px;
+    font-weight:700;
+    color:var(--text);
+  }
+  .big-number.small{font-size:24px;}
+
+  /* Plan Achieve / OEE style cards with sub-rows + big % */
+  .split-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .sub-list{
+    flex:1;
+  }
+  .sub-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    padding:2px 0;
+  }
+  .sub-row .val{
+    color:var(--teal);
+    font-weight:600;
+  }
+  .sub-row .val.yellow{color:var(--yellow);}
+  .split-big{
+    font-size:30px;
+    font-weight:700;
+    color:var(--red);
+    padding-left:10px;
+    border-left:1px solid var(--border);
+    min-width:70px;
+    text-align:center;
+  }
+
+  /* New priority cards row */
+  .mini-title{
+    font-size:11px;
+    font-weight:600;
+    color:var(--gray);
+    text-transform:uppercase;
+    letter-spacing:.3px;
+    margin-bottom:6px;
+  }
+  .bottleneck-stage{
+    font-size:22px;
+    font-weight:700;
+    color:var(--red);
+    text-align:center;
+  }
+  .bottleneck-sub{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--gray);
+    margin-top:4px;
+  }
+  .fpy-strip{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px 6px;
+  }
+  .fpy-item{
+    text-align:center;
+    flex:1;
+  }
+  .fpy-item .label{
+    font-size:13px;
+    color:var(--gray);
+    white-space:nowrap;
+  }
+  .fpy-item .val{
+    font-size:22px;
+    font-weight:700;
+  }
+  .fpy-item .val.good{color:var(--green);}
+  .fpy-item .val.warn{color:var(--yellow);}
+  .fpy-item .val.bad{color:var(--red);}
+
+  .alarm-number{
+    text-align:center;
+    font-size:30px;
+    font-weight:700;
+    color:var(--red);
+  }
+  .alarm-number.ok{color:var(--green);}
+
+  /* stage utilization mini bars */
+  .util-row{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .util-stage{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .util-label{
+    width:64px;
+    font-size:11px;
+    color:var(--gray);
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .util-bar{
+    flex:1;
+    height:12px;
+    display:flex;
+    border-radius:3px;
+    overflow:hidden;
+    background:#eee;
+  }
+  .seg-run{background:var(--teal);}
+  .seg-starved{background:#cbd5e1;}
+  .seg-blocked{background:var(--yellow);}
+
+  .legend{
+    display:flex;
+    gap:10px;
+    font-size:10px;
+    color:var(--gray);
+    margin-top:6px;
+    justify-content:center;
+  }
+  .legend span{display:flex; align-items:center; gap:3px;}
+  .legend i{width:9px; height:9px; display:inline-block; border-radius:2px;}
+
+  .empty-zone{
+    margin-top:18px;
+    border:2px dashed var(--border);
+    border-radius:6px;
+    min-height:300px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--gray);
+    font-size:13px;
+  }
+
+  /* Hourly production tracking (now its own full-width row) */
+  .hourly-chart{
+    display:flex;
+    align-items:flex-end;
+    gap:0;
+    height:170px;
+    padding:0 4px 4px 4px;
+    justify-content:space-between;
+  }
+  .hour-pct{
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:5px;
+  }
+  .hour-pct.good{color:var(--green);}
+  .hour-pct.warn{color:var(--yellow-dark, #b8890a);}
+  .hour-pct.bad{color:var(--red);}
+  .hour-pct.muted{color:#b0b5bc;}
+  .hour-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    height:100%;
+    width:92px;
+  }
+  .hour-bar{
+    width:52px;
+    flex:1;
+    min-height:0;
+    border-radius:5px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    background:#d1d5db;
+  }
+  .hour-fill-green{width:100%; background:var(--green);}
+  .hour-fill-top{width:100%;}
+  .hour-fill-top.red{background:var(--red);}
+  .hour-fill-top.yellow{background:var(--yellow);}
+  .hour-count{
+    font-size:11.5px;
+    color:var(--gray);
+    margin-top:6px;
+    font-weight:600;
+  }
+  .hour-label{
+    font-size:11px;
+    color:var(--text);
+    font-weight:600;
+    margin-top:2px;
+    text-align:center;
+    line-height:1.3;
+  }
+  .hourly-legend{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    margin-top:12px;
+    font-size:11px;
+    color:var(--gray);
+    flex-wrap:wrap;
+  }
+  .hourly-legend span{display:flex; align-items:center; gap:4px;}
+  .hourly-legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+
+  /* Error count strip (inverted logic - fewer is better) */
+  .err-chart{
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    height:190px;
+    padding:0 4px 4px 0;
+    justify-content:flex-start;
+  }
+  .err-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    height:100%;
+    width:92px;
+  }
+  .err-count-top{
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:5px;
+  }
+  .err-count-top.good{color:var(--green);}
+  .err-count-top.warn{color:var(--yellow);}
+  .err-count-top.bad{color:var(--red);}
+  .err-bar-track{
+    width:24px;
+    flex:1;
+    min-height:0;
+    border-radius:4px;
+    background:#eef0f2;
+    display:flex;
+    align-items:flex-end;
+    overflow:hidden;
+  }
+  .err-bar-fill{
+    width:100%;
+    border-radius:4px 4px 0 0;
+  }
+  .err-hour-label{
+    font-size:11px;
+    color:var(--text);
+    font-weight:600;
+    margin-top:6px;
+  }
+  .err-minute-track{
+    position:relative;
+    width:38px;
+    height:14px;
+    background:#f3f4f6;
+    border:1px solid var(--border);
+    border-radius:3px;
+    margin-top:5px;
+  }
+  .err-tick{
+    position:absolute;
+    top:1px;
+    width:3px;
+    height:10px;
+    border-radius:1px;
+    background:var(--red);
+  }
+  .err-tick.machine{background:#ef4444;}
+  .err-tick.human{background:#ec4899;}
+  .err-tick.other{background:#a855f7;}
+  .err-minute-hint{
+    font-size:8.5px;
+    color:#b0b5bc;
+    margin-top:2px;
+  }
+  .err-legend{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    margin-top:12px;
+    font-size:11px;
+    color:var(--gray);
+    flex-wrap:wrap;
+  }
+  .err-legend span{display:flex; align-items:center; gap:5px;}
+  .err-legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+
+
+
+  /* Error log */
+  .err-log-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+  }
+  .err-log-table th{
+    text-align:left;
+    font-size:10.5px;
+    text-transform:uppercase;
+    color:var(--gray);
+    letter-spacing:.3px;
+    padding:4px 8px;
+    border-bottom:1px solid var(--border);
+  }
+  .err-log-table td{
+    padding:6px 8px;
+    border-bottom:1px solid #f1f2f4;
+  }
+  .status-pill{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:10px;
+    font-size:10.5px;
+    font-weight:600;
+  }
+  .status-pill.active{background:#fee2e2; color:var(--red);}
+  .status-pill.cleared{background:#dcfce7; color:var(--green);}
+
+  /* MTBF/MTTR shift timeline */
+  .mttr-stage-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .mttr-label{
+    width:64px;
+    font-size:12px;
+    font-weight:600;
+    flex-shrink:0;
+  }
+  .mttr-track{
+    position:relative;
+    flex:1;
+    height:22px;
+    background:var(--green);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .mttr-down-block{
+    position:absolute;
+    top:0;
+    height:100%;
+    background:var(--red);
+  }
+  .mttr-summary{
+    width:190px;
+    flex-shrink:0;
+    font-size:11px;
+    display:flex;
+    gap:10px;
+    justify-content:flex-end;
+  }
+  .mttr-summary b{font-weight:700;}
+  .mttr-axis{
+    display:flex;
+    justify-content:space-between;
+    font-size:10px;
+    color:var(--gray);
+    margin:2px 0 4px 74px;
+  }
+  .mttr-legend{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    margin-top:10px;
+    font-size:11px;
+    color:var(--gray);
+  }
+  .mttr-legend span{display:flex; align-items:center; gap:5px;}
+  .mttr-legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+
+  /* Bottom taskbar-style docked panel */
+  body{ padding-bottom:310px; }
+  .bottom-bar{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:40px;
+    background:#e5e7eb;
+    border-top:2px solid var(--border);
+    box-shadow:0 -4px 12px rgba(0,0,0,0.06);
+    padding:14px 16px;
+    display:flex;
+    gap:10px;
+    z-index:100;
+    max-height:260px;
+  }
+  .bottom-bar .card{
+    margin-bottom:0;
+    padding:10px 14px;
+  }
+
+  /* Excel-style display tab strip, dark gray, pinned to the very bottom */
+  .display-tabs{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:40px;
+    background:#374151;
+    display:flex;
+    align-items:flex-end;
+    gap:2px;
+    padding:0 10px;
+    z-index:101;
+  }
+  .display-tab{
+    background:#4b5563;
+    color:#d1d5db;
+    font-size:12px;
+    font-weight:600;
+    padding:8px 18px;
+    border-radius:4px 4px 0 0;
+    cursor:pointer;
+  }
+  .display-tab.active{
+    background:#fff;
+    color:var(--text);
+  }
+  .display-tab-add{
+    background:transparent;
+    color:#9ca3af;
+    font-size:16px;
+    font-weight:700;
+    padding:6px 10px;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">Manufacturing KPI Dashboard — Product Line A</div>
+
+<!-- ORIGINAL TOP ROW (cost card removed) -->
+<div class="row">
+  <div class="card">
+    <div class="card-title">Total Approved Units</div>
+    <div class="big-number">43,927</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Total Defects</div>
+    <div class="big-number">7,074</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Defect %</div>
+    <div class="big-number" style="color:var(--yellow);">14%</div>
+  </div>
+  <div class="card" style="flex:1.6;">
+    <div class="card-title">Plan Achieve %</div>
+    <div class="split-card">
+      <div class="sub-list">
+        <div class="sub-row"><span>Run time (Hrs)</span><span class="val">571</span></div>
+        <div class="sub-row"><span>Lost Time (Hrs)</span><span class="val">115</span></div>
+        <div class="sub-row"><span>Average UPH</span><span class="val">93</span></div>
+      </div>
+      <div class="split-big">69%</div>
+    </div>
+  </div>
+  <div class="card" style="flex:1.6;">
+    <div class="card-title">OEE % Analysis</div>
+    <div class="split-card">
+      <div class="sub-list">
+        <div class="sub-row"><span>Availability</span><span class="val yellow">83%</span></div>
+        <div class="sub-row"><span>Performance</span><span class="val yellow">81%</span></div>
+        <div class="sub-row"><span>Quality</span><span class="val yellow">86%</span></div>
+      </div>
+      <div class="split-big">58%</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 NEW HIGH PRIORITY CARDS -->
+<div class="row">
+  <div class="card">
+    <div class="mini-title">Bottleneck Machine</div>
+    <div class="bottleneck-stage">Machine 3</div>
+    <div class="bottleneck-sub">Cycle Time: 58s (highest)</div>
+  </div>
+
+  <div class="card" style="flex:1.6;">
+    <div class="mini-title">First Pass Yield by Machine</div>
+    <div class="fpy-strip">
+      <div class="fpy-item"><div class="label">Machine 1</div><div class="val good">98%</div></div>
+      <div class="fpy-item"><div class="label">Machine 2</div><div class="val good">95%</div></div>
+      <div class="fpy-item"><div class="label">Machine 3</div><div class="val bad">89%</div></div>
+      <div class="fpy-item"><div class="label">Machine 4</div><div class="val good">97%</div></div>
+      <div class="fpy-item"><div class="label">Machine 5</div><div class="val good">99%</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="flex:0.5;">
+    <div class="mini-title">Active Alarms</div>
+    <div class="alarm-number">2</div>
+  </div>
+
+  <div class="card" style="flex:2.3;">
+    <div class="mini-title">Machine Utilization (Run / Starved / Blocked)</div>
+    <div class="util-row">
+      <div class="util-stage"><div class="util-label">Machine 1</div><div class="util-bar"><div class="seg-run" style="width:82%"></div><div class="seg-starved" style="width:10%"></div><div class="seg-blocked" style="width:8%"></div></div></div>
+      <div class="util-stage"><div class="util-label">Machine 2</div><div class="util-bar"><div class="seg-run" style="width:70%"></div><div class="seg-starved" style="width:20%"></div><div class="seg-blocked" style="width:10%"></div></div></div>
+      <div class="util-stage"><div class="util-label">Machine 3</div><div class="util-bar"><div class="seg-run" style="width:60%"></div><div class="seg-starved" style="width:15%"></div><div class="seg-blocked" style="width:25%"></div></div></div>
+      <div class="util-stage"><div class="util-label">Machine 4</div><div class="util-bar"><div class="seg-run" style="width:75%"></div><div class="seg-starved" style="width:5%"></div><div class="seg-blocked" style="width:20%"></div></div></div>
+      <div class="util-stage"><div class="util-label">Machine 5</div><div class="util-bar"><div class="seg-run" style="width:88%"></div><div class="seg-starved" style="width:8%"></div><div class="seg-blocked" style="width:4%"></div></div></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--teal);"></i>Running</span>
+      <span><i style="background:#cbd5e1;"></i>Starved</span>
+      <span><i style="background:var(--yellow);"></i>Blocked</span>
+    </div>
+  </div>
+</div>
+
+<!-- HOURLY PRODUCTION - full width row of its own -->
+<div class="row">
+  <div class="card">
+    <div style="display:flex; gap:14px;">
+      <div style="flex:0.6; min-width:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="mini-title" style="margin-bottom:0; font-size:12.5px;">Production vs Target — Interval Tracking (incl. Overtime)</div>
+          <div style="text-align:right;">
+            <div style="font-size:10.5px; color:var(--gray); font-weight:600; text-transform:uppercase; letter-spacing:.3px;">Produced Today</div>
+            <div id="dailyTotal" style="font-size:22px; font-weight:700; color:var(--text);">34<span style="font-size:15px; color:var(--gray); font-weight:600;">/100</span></div>
+          </div>
+        </div>
+        <div class="hourly-chart" id="hourlyChart"></div>
+        <div class="hourly-legend">
+          <span><i style="background:var(--green);"></i>Produced</span>
+          <span><i style="background:var(--yellow);"></i>Remaining (current hour)</span>
+          <span><i style="background:var(--red);"></i>Shortfall (closed hour)</span>
+          <span><i style="background:#d1d5db;"></i>Not started</span>
+        </div>
+      </div>
+      <div class="empty-zone" style="margin-top:0; flex:0.4; width:auto; min-height:auto; align-self:stretch;">reserved</div>
+    </div>
+  </div>
+</div>
+
+<!-- ERROR STRIP - full width row, matching production strip -->
+<div class="row">
+  <div class="card">
+    <div style="display:flex; gap:14px;">
+      <div style="flex:0.6; min-width:0;">
+        <div class="mini-title" style="font-size:12.5px;">Hourly Error Pattern (count + within-hour timing)</div>
+        <div style="display:flex; gap:8px;">
+          <div id="errLabelSpace" style="width:70px; flex-shrink:0; display:flex; flex-direction:column; justify-content:flex-end; gap:6px; padding-bottom:34px;">
+            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 1</div>
+            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 2</div>
+            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 3</div>
+            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 4</div>
+            <div style="font-size:11px; font-weight:600; color:var(--text);">Machine 5</div>
+          </div>
+          <div class="err-chart" id="errChart"></div>
+        </div>
+        <div class="err-legend">
+          <span><i style="background:#ef4444;"></i>Machine error</span>
+          <span><i style="background:#ec4899;"></i>Human error</span>
+          <span><i style="background:#a855f7;"></i>Other / unusual</span>
+        </div>
+      </div>
+      <div class="empty-zone" style="margin-top:0; flex:0.4; width:auto; min-height:auto; align-self:stretch;">reserved</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM TASKBAR-STYLE PANEL: MTBF/MTTR (left) + Live Error Log (right) -->
+<div class="bottom-bar">
+  <div class="card" style="flex:1.4;">
+    <div class="mini-title" style="font-size:12.5px;">MTBF / MTTR — Shift Timeline (9:20 – 19:20)</div>
+    <div class="mttr-axis"><span>9:20</span><span>11:20</span><span>13:20</span><span>15:20</span><span>17:20</span><span>19:20</span></div>
+    <div id="mttrRows"></div>
+    <div class="mttr-legend">
+      <span><i style="background:var(--green);"></i>Running</span>
+      <span><i style="background:var(--red);"></i>Down (width = repair time)</span>
+    </div>
+  </div>
+  <div class="card" style="flex:1;">
+    <div class="mini-title" style="font-size:12.5px;">Live Error / Alarm Log</div>
+    <table class="err-log-table">
+      <thead>
+        <tr><th>Time</th><th>Machine</th><th>Error</th><th>Status</th></tr>
+      </thead>
+      <tbody id="errLogBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DISPLAY SWITCHER TABS - Excel sheet-tab style, pinned to the very bottom -->
+<div class="display-tabs">
+  <div class="display-tab active">Display 1</div>
+  <div class="display-tab">Display 2</div>
+  <div class="display-tab-add">+</div>
+</div>
+
+<script>
+const hours = [
+  {label:"8:20–10:20", target:20, produced:20, status:"done"},
+  {label:"10:20–13:00", target:25, produced:18, status:"done"},
+  {label:"13:00–15:10", target:25, produced:10, status:"current"},
+  {label:"15:10–17:20", target:20, produced:0,  status:"future"},
+  {label:"17:20–19:20 (OT)", target:20, produced:0, status:"future"},
+  {label:"19:20–21:20 (OT)", target:20, produced:0, status:"future"}
+];
+
+const hourlyChart = document.getElementById('hourlyChart');
+const dailyTarget = 130;
+let cumulativeProduced = 0;
+
+hours.forEach(h => {
+  const pct = Math.min(100, (h.produced / h.target) * 100);
+  const remaining = 100 - pct;
+  if(h.status !== 'future') cumulativeProduced += h.produced;
+
+  const col = document.createElement('div');
+  col.className = 'hour-col';
+
+  // Percentage label above the bar
+  const pctLabel = document.createElement('div');
+  if(h.status === 'future'){
+    pctLabel.className = 'hour-pct muted';
+    pctLabel.textContent = '—';
+  } else {
+    pctLabel.textContent = Math.round(pct) + '%';
+    if(pct >= 90) pctLabel.className = 'hour-pct good';
+    else if(pct >= 60) pctLabel.className = 'hour-pct warn';
+    else pctLabel.className = 'hour-pct bad';
+  }
+
+  const bar = document.createElement('div');
+  bar.className = 'hour-bar';
+
+  if(h.status !== 'future'){
+    const greenFill = document.createElement('div');
+    greenFill.className = 'hour-fill-green';
+    greenFill.style.height = pct + '%';
+
+    if(remaining > 0){
+      const topFill = document.createElement('div');
+      topFill.className = 'hour-fill-top ' + (h.status === 'current' ? 'yellow' : 'red');
+      topFill.style.height = remaining + '%';
+      bar.appendChild(topFill);
+    }
+    bar.appendChild(greenFill);
+  }
+
+  const countLabel = document.createElement('div');
+  countLabel.className = 'hour-count';
+  countLabel.textContent = h.status === 'future' ? '—' : `${h.produced}/${h.target}`;
+
+  const hourLabel = document.createElement('div');
+  hourLabel.className = 'hour-label';
+  hourLabel.textContent = h.label;
+
+  col.appendChild(pctLabel);
+  col.appendChild(bar);
+  col.appendChild(countLabel);
+  col.appendChild(hourLabel);
+  hourlyChart.appendChild(col);
+});
+
+document.getElementById('dailyTotal').innerHTML =
+  `${cumulativeProduced}<span style="font-size:15px; color:var(--gray); font-weight:600;">/${dailyTarget}</span>`;
+
+// ---- Error hourly strip with within-hour timestamp ticks (categorized) ----
+const errHours = [
+  {label:"8:20–10:20", events:[{min:30, cat:"human"}]},
+  {label:"10:20–13:00", events:[{min:4, cat:"machine"}, {min:22, cat:"machine"}, {min:41, cat:"machine"}]},
+  {label:"13:00–15:10", events:[{min:10, cat:"human"}, {min:50, cat:"machine"}]},
+  {label:"15:10–17:20", events:[{min:5, cat:"machine"}, {min:12, cat:"machine"}, {min:18, cat:"other"}, {min:47, cat:"human"}]},
+  {label:"17:20–19:20 (OT)", events:[]},
+  {label:"19:20–21:20 (OT)", events:[]}
+];
+const maxErr = 6; // scale reference for bar height
+const errChart = document.getElementById('errChart');
+
+errHours.forEach(e => {
+  const count = e.events.length;
+  const col = document.createElement('div');
+  col.className = 'err-col';
+
+  const topLabel = document.createElement('div');
+  topLabel.textContent = count;
+  topLabel.className = 'err-count-top ' + (count <= 1 ? 'good' : count <= 3 ? 'warn' : 'bad');
+
+  const track = document.createElement('div');
+  track.className = 'err-bar-track';
+
+  // Minute-level timestamp ticks within the hour (0-60 min mapped left to right), colored by category
+  const minuteTrack = document.createElement('div');
+  minuteTrack.className = 'err-minute-track';
+  e.events.forEach(ev => {
+    const tick = document.createElement('div');
+    tick.className = 'err-tick ' + ev.cat;
+    tick.style.left = `calc(${(ev.min / 60) * 100}% - 1.5px)`;
+    tick.title = `:${String(ev.min).padStart(2,'0')} — ${ev.cat}`;
+    minuteTrack.appendChild(tick);
+  });
+
+  const minuteHint = document.createElement('div');
+  minuteHint.className = 'err-minute-hint';
+  minuteHint.textContent = ':00 – :60';
+
+  const hourLabel = document.createElement('div');
+  hourLabel.className = 'err-hour-label';
+  hourLabel.textContent = e.label;
+
+  col.appendChild(topLabel);
+  col.appendChild(track);
+  col.appendChild(minuteTrack);
+  col.appendChild(minuteHint);
+  col.appendChild(hourLabel);
+  errChart.appendChild(col);
+});
+
+const shiftStartMin = 9*60+20;   // 9:20
+const shiftEndMin = 19*60+20;    // 19:20
+const shiftTotalMin = shiftEndMin - shiftStartMin; // 600 min
+
+// breakdowns given as [startHHMM, endHHMM] per stage
+function toMin(hhmm){ const [h,m] = hhmm.split(':').map(Number); return h*60+m; }
+
+const stageBreakdowns = {
+  "Machine 1": [["10:05","10:20"]],
+  "Machine 2": [["12:00","12:35"], ["16:10","16:25"]],
+  "Machine 3": [["11:40","12:10"], ["15:15","16:45"]],
+  "Machine 4": [["14:00","14:15"]],
+  "Machine 5": []
+};
+
+const mttrRows = document.getElementById('mttrRows');
+
+Object.entries(stageBreakdowns).forEach(([stage, breakdowns]) => {
+  const row = document.createElement('div');
+  row.className = 'mttr-stage-row';
+
+  const label = document.createElement('div');
+  label.className = 'mttr-label';
+  label.textContent = stage;
+
+  const track = document.createElement('div');
+  track.className = 'mttr-track';
+
+  let totalDown = 0;
+  breakdowns.forEach(([s, e]) => {
+    const startMin = toMin(s) - shiftStartMin;
+    const endMin = toMin(e) - shiftStartMin;
+    const dur = endMin - startMin;
+    totalDown += dur;
+
+    const block = document.createElement('div');
+    block.className = 'mttr-down-block';
+    block.style.left = (startMin / shiftTotalMin * 100) + '%';
+    block.style.width = (dur / shiftTotalMin * 100) + '%';
+    block.title = `${s}–${e} (${dur} min)`;
+    track.appendChild(block);
+  });
+
+  const failures = breakdowns.length;
+  const totalUp = shiftTotalMin - totalDown;
+  const mtbf = failures > 0 ? (totalUp / failures) : totalUp;
+  const mttr = failures > 0 ? (totalDown / failures) : 0;
+
+  const summary = document.createElement('div');
+  summary.className = 'mttr-summary';
+  summary.innerHTML = `<span>MTBF: <b>${(mtbf/60).toFixed(1)}h</b></span><span>MTTR: <b>${mttr.toFixed(0)}m</b></span>`;
+
+  row.appendChild(label);
+  row.appendChild(track);
+  row.appendChild(summary);
+  mttrRows.appendChild(row);
+});
+const errLog = [
+  {time:"13:42", stage:"Machine 3", error:"Mold temperature out of range", status:"active"},
+  {time:"13:10", stage:"Machine 2", error:"Sensor signal dropout", status:"cleared"},
+  {time:"12:05", stage:"Machine 3", error:"Cycle time exceeded threshold", status:"cleared"},
+  {time:"10:52", stage:"Machine 1", error:"Material feed delay", status:"cleared"},
+  {time:"10:15", stage:"Machine 4", error:"Pressure spike detected", status:"active"}
+];
+const errLogBody = document.getElementById('errLogBody');
+errLog.forEach(r => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${r.time}</td>
+    <td>${r.stage}</td>
+    <td>${r.error}</td>
+    <td><span class="status-pill ${r.status}">${r.status === 'active' ? 'Active' : 'Cleared'}</span></td>
+  `;
+  errLogBody.appendChild(tr);
+});
+</script>
+
+</body>
+</html>
