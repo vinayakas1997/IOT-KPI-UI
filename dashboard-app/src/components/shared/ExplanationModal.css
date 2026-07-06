@@ -1,0 +1,65 @@
+.explanation-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.explanation-modal {
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  width: min(520px, 90vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.explanation-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--teal);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+  position: sticky;
+  top: 0;
+  background: #fff;
+}
+
+.explanation-modal-close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--gray);
+  padding: 0 4px;
+}
+
+.explanation-modal-body {
+  padding: 14px 16px 18px;
+}
+
+.explanation-modal-body h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ea580c;
+  margin: 14px 0 4px;
+}
+
+.explanation-modal-body h3:first-child {
+  margin-top: 0;
+}
+
+.explanation-modal-body p {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 0 0 4px;
+}

@@ -1,0 +1,116 @@
+.err-chart-frame {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.err-chart-grid {
+  display: grid;
+  grid-template-rows: auto repeat(5, 1fr) auto;
+  row-gap: clamp(2px, 0.5vh, 4px);
+  column-gap: clamp(4px, 1.2vw, 10px);
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  align-items: stretch;
+}
+
+.err-count-top {
+  font-size: clamp(12px, 1vw, 15px);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.err-count-top.good {
+  color: var(--green);
+}
+
+.err-count-top.warn {
+  color: var(--yellow);
+}
+
+.err-count-top.bad {
+  color: var(--red);
+}
+
+.err-row-label {
+  font-size: clamp(9.5px, 0.8vw, 11px);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.err-minute-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 10px;
+  background: #f3f4f6;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.err-tick {
+  position: absolute;
+  top: 2px;
+  width: 3px;
+  height: calc(100% - 4px);
+  border-radius: 1px;
+}
+
+.err-tick.machine {
+  background: #ef4444;
+}
+
+.err-tick.human {
+  background: #2563eb;
+}
+
+.err-tick.other {
+  background: #a855f7;
+}
+
+.err-hour-label {
+  font-size: clamp(9.5px, 0.8vw, 11px);
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.err-legend {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 12px;
+  font-size: clamp(9.5px, 0.8vw, 11px);
+  color: var(--gray);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.err-legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.err-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}

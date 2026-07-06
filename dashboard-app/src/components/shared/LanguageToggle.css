@@ -1,0 +1,30 @@
+.language-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px;
+  background: #fff;
+}
+
+.language-toggle button {
+  border: none;
+  background: transparent;
+  padding: 3px 10px;
+  font-size: clamp(11px, 0.85vw, 13px);
+  font-weight: 600;
+  color: var(--gray);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.language-toggle button.active {
+  background: var(--teal);
+  color: #fff;
+}
+
+.language-toggle-divider {
+  color: var(--border);
+  font-size: 11px;
+}

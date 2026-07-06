@@ -1,0 +1,10 @@
+.alarm-number {
+  text-align: center;
+  font-size: clamp(20px, 2vw + 1vh, 32px);
+  font-weight: 700;
+  color: var(--red);
+}
+
+.alarm-number.ok {
+  color: var(--green);
+}

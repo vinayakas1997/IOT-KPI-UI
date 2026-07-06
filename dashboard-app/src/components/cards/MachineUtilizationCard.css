@@ -1,0 +1,62 @@
+.util-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.util-stage {
+  display: grid;
+  grid-template-columns: minmax(56px, 18%) 1fr;
+  align-items: center;
+  gap: 6px;
+}
+
+.util-label {
+  font-size: clamp(9.5px, 0.7vw, 11px);
+  color: var(--gray);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.util-bar {
+  height: clamp(10px, 1.4vh, 12px);
+  display: flex;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #eee;
+}
+
+.seg-run {
+  background: var(--teal);
+}
+
+.seg-starved {
+  background: #cbd5e1;
+}
+
+.seg-blocked {
+  background: var(--yellow);
+}
+
+.legend {
+  display: flex;
+  gap: 10px;
+  font-size: clamp(9px, 0.7vw, 10px);
+  color: var(--gray);
+  margin-top: 6px;
+  justify-content: center;
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.legend i {
+  width: 9px;
+  height: 9px;
+  display: inline-block;
+  border-radius: 2px;
+}

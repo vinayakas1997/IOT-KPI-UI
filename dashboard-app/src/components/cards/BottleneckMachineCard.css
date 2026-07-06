@@ -1,0 +1,53 @@
+.bottleneck-stage {
+  font-size: clamp(17px, 1.6vw, 24px);
+  font-weight: 700;
+  color: var(--red);
+  text-align: center;
+}
+
+.bottleneck-sub {
+  text-align: center;
+  font-size: clamp(9.5px, 0.7vw, 11px);
+  color: var(--gray);
+  margin-top: 4px;
+}
+
+.cycle-compare-header {
+  text-align: center;
+  font-size: clamp(8.5px, 0.65vw, 10px);
+  font-weight: 600;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.cycle-compare-grid {
+  display: grid;
+  grid-template-rows: repeat(3, auto);
+  grid-auto-flow: column;
+  column-gap: clamp(8px, 1vw, 14px);
+  row-gap: 3px;
+  justify-content: center;
+}
+
+.cycle-compare-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: clamp(9px, 0.7vw, 10.5px);
+}
+
+.cycle-compare-item .name {
+  color: var(--gray);
+}
+
+.cycle-compare-item .vals {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cycle-compare-item.bad .vals {
+  color: var(--red);
+}

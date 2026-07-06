@@ -1,0 +1,33 @@
+.display-tabs {
+  flex-shrink: 0;
+  height: clamp(30px, 4vh, 40px);
+  background: #374151;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0 clamp(6px, 1vw, 10px);
+}
+
+.display-tab {
+  background: #4b5563;
+  color: #d1d5db;
+  font-size: clamp(11px, 0.8vw, 12px);
+  font-weight: 600;
+  padding: clamp(5px, 0.8vh, 8px) clamp(12px, 1.4vw, 18px);
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+}
+
+.display-tab.active {
+  background: #fff;
+  color: var(--text);
+}
+
+.display-tab-add {
+  background: transparent;
+  color: #9ca3af;
+  font-size: clamp(14px, 1.2vw, 16px);
+  font-weight: 700;
+  padding: clamp(4px, 0.6vh, 6px) 10px;
+  cursor: pointer;
+}

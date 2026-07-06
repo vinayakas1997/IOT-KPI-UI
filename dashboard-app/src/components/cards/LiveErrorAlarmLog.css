@@ -1,0 +1,49 @@
+.err-log-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 8px;
+  min-height: 0;
+}
+
+.err-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(10.5px, 0.85vw, 12px);
+}
+
+.err-log-table th {
+  text-align: left;
+  font-size: clamp(9px, 0.7vw, 10.5px);
+  text-transform: uppercase;
+  color: var(--gray);
+  letter-spacing: 0.3px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: #fff;
+}
+
+.err-log-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f1f2f4;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: clamp(9px, 0.7vw, 10.5px);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-pill.active {
+  background: #fee2e2;
+  color: var(--red);
+}
+
+.status-pill.cleared {
+  background: #dcfce7;
+  color: var(--green);
+}

@@ -1,0 +1,144 @@
+.radar-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 0;
+  padding: 4px 0;
+}
+
+.radar-svg-col {
+  flex: 1.5;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  position: relative;
+}
+
+#radarChartSvg text {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--text);
+  cursor: default;
+}
+
+.radar-axis-line {
+  stroke: var(--border);
+  stroke-width: 1.2px;
+}
+
+.radar-grid-polygon {
+  stroke: #d1d5db;
+  stroke-width: 1px;
+  fill: none;
+}
+
+.radar-grid-polygon.outer {
+  stroke: var(--gray);
+}
+
+.radar-data-polygon {
+  fill: rgba(13, 148, 136, 0.18);
+  stroke: var(--teal);
+  stroke-width: 2.5px;
+  transition: stroke-width 0.2s ease, fill 0.2s ease;
+}
+
+.radar-data-polygon:hover {
+  fill: rgba(13, 148, 136, 0.26);
+  stroke-width: 3.5px;
+}
+
+.radar-vertex {
+  fill: var(--teal);
+  stroke: #fff;
+  stroke-width: 1.5px;
+  cursor: pointer;
+  transition: r 0.15s ease, fill 0.15s ease;
+}
+
+.radar-vertex:hover {
+  r: 7.5px;
+  fill: var(--teal-dark);
+}
+
+.radar-value-label {
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--teal-dark) !important;
+}
+
+.radar-tooltip {
+  position: absolute;
+  display: none;
+  background: rgba(31, 41, 55, 0.95);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  margin-top: -8px;
+  transition: opacity 0.15s ease;
+}
+
+.radar-kpis-grid {
+  flex: 1.5;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 16px;
+  align-content: center;
+  height: 100%;
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+  min-width: 0;
+}
+
+.radar-kpi-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2px 8px;
+  min-width: 0;
+}
+
+.radar-kpi-item .kpi-label {
+  font-size: clamp(9px, 0.75vw, 11px);
+  color: var(--gray);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.radar-kpi-item .kpi-value {
+  font-size: clamp(16px, 1.8vw, 26px);
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.radar-kpi-item .kpi-value.good {
+  color: var(--green);
+}
+
+.radar-kpi-item .kpi-value.warn {
+  color: var(--yellow);
+}
+
+.radar-kpi-item .kpi-value.bad {
+  color: var(--red);
+}
