@@ -37,6 +37,9 @@ interface Props {
   valueField: 'cycle' | 'energy';
   hoveredMachine: string | null;
   onHoverMachine: (machine: string | null) => void;
+  cycleLabel: string;
+  averageLabel: string;
+  intervalLabel: string;
   onExplainClick?: (id: InfoId) => void;
 }
 
@@ -55,6 +58,9 @@ export function ScatterSplineChart({
   valueField,
   hoveredMachine,
   onHoverMachine,
+  cycleLabel,
+  averageLabel,
+  intervalLabel,
   onExplainClick,
 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -110,7 +116,7 @@ export function ScatterSplineChart({
           circle.style.cursor = 'pointer';
 
           const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-          tooltip.textContent = `${machine}\nCycle: ${i + 1}\n${axis.title}: ${value.toFixed(1)}\nInterval: ${h.label}`;
+          tooltip.textContent = `${machine}\n${cycleLabel}: ${i + 1}\n${axis.title}: ${value.toFixed(1)}\n${intervalLabel}: ${h.label}`;
           circle.appendChild(tooltip);
 
           circle.addEventListener('mouseenter', () => {
@@ -177,7 +183,7 @@ export function ScatterSplineChart({
         dot.style.cursor = 'pointer';
 
         const tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-        tooltip.textContent = `${machine} Average\n${axis.title}: ${pt.val.toFixed(1)}\nInterval: ${pt.intervalLabel}`;
+        tooltip.textContent = `${machine} ${averageLabel}\n${axis.title}: ${pt.val.toFixed(1)}\n${intervalLabel}: ${pt.intervalLabel}`;
         dot.appendChild(tooltip);
 
         dot.addEventListener('mouseenter', () => onHoverMachine(machine));
@@ -193,7 +199,7 @@ export function ScatterSplineChart({
       line.addEventListener('mouseleave', () => onHoverMachine(null));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hours, machineProfiles, machineColors, valueField, axis.maxValue, axis.title]);
+  }, [hours, machineProfiles, machineColors, valueField, axis.maxValue, axis.title, cycleLabel, averageLabel, intervalLabel]);
 
   // Re-apply hover styling on this chart's own trend lines/dots whenever the shared
   // hovered machine changes — avoids rebuilding the whole chart on every hover event.

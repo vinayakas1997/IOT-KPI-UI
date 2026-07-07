@@ -12,7 +12,7 @@ import type {
   DowntimeEvent,
 } from '../types';
 import { toMin, totalBufferMinutes } from '../utils/time';
-import { deriveStageBreakdowns, deriveErrLog, deriveErrHours, totalDowntimeMinutesUnion } from '../utils/deriveFromEvents';
+import { deriveStageBreakdowns, deriveErrHours, totalDowntimeMinutesUnion } from '../utils/deriveFromEvents';
 
 /**
  * Single seam for demo data. Every number below is currently hardcoded in the
@@ -96,26 +96,25 @@ const SHIFT_INTERVAL_LABELS = [
  */
 export const downtimeEvents: DowntimeEvent[] = [
   // Stoppages
-  { machine: 'Machine 1', start: '10:05', durationMin: 15, category: 'machine', description: 'Conveyor jam forces stoppage', status: 'cleared', causesDowntime: true },
-  { machine: 'Machine 3', start: '11:40', durationMin: 30, category: 'machine', description: 'Mold temperature runaway shutdown', status: 'cleared', causesDowntime: true },
-  { machine: 'Machine 2', start: '12:00', durationMin: 35, category: 'machine', description: 'Feed hopper blockage', status: 'cleared', causesDowntime: true },
-  { machine: 'Machine 4', start: '14:00', durationMin: 15, category: 'human', description: 'Operator emergency stop', status: 'cleared', causesDowntime: true },
-  { machine: 'Machine 3', start: '15:15', durationMin: 90, category: 'machine', description: 'Hydraulic system failure', status: 'cleared', causesDowntime: true },
-  { machine: 'Machine 2', start: '16:10', durationMin: 15, category: 'machine', description: 'Servo motor fault halts line', status: 'cleared', causesDowntime: true },
+  { machine: 'Machine 1', start: '10:05', durationMin: 15, category: 'machine', description: 'Conveyor jam forces stoppage', descriptionJp: 'コンベアジャムによる停止', status: 'cleared', causesDowntime: true },
+  { machine: 'Machine 3', start: '11:40', durationMin: 30, category: 'machine', description: 'Mold temperature runaway shutdown', descriptionJp: '金型温度異常上昇による停止', status: 'cleared', causesDowntime: true },
+  { machine: 'Machine 2', start: '12:00', durationMin: 35, category: 'machine', description: 'Feed hopper blockage', descriptionJp: '原料ホッパーの詰まり', status: 'cleared', causesDowntime: true },
+  { machine: 'Machine 4', start: '14:00', durationMin: 15, category: 'human', description: 'Operator emergency stop', descriptionJp: 'オペレーターによる非常停止', status: 'cleared', causesDowntime: true },
+  { machine: 'Machine 3', start: '15:15', durationMin: 90, category: 'machine', description: 'Hydraulic system failure', descriptionJp: '油圧システム故障', status: 'cleared', causesDowntime: true },
+  { machine: 'Machine 2', start: '16:10', durationMin: 15, category: 'machine', description: 'Servo motor fault halts line', descriptionJp: 'サーボモーター異常によるライン停止', status: 'cleared', causesDowntime: true },
   // Brief alarms (no stoppage)
-  { machine: 'Machine 4', start: '10:15', durationMin: 4, category: 'machine', description: 'Pressure spike detected', status: 'active', causesDowntime: false },
-  { machine: 'Machine 3', start: '11:45', durationMin: 6, category: 'machine', description: 'Thermal calibration shift', status: 'cleared', causesDowntime: false },
-  { machine: 'Machine 3', start: '12:05', durationMin: 5, category: 'machine', description: 'Cycle time exceeded threshold', status: 'cleared', causesDowntime: false },
-  { machine: 'Machine 3', start: '13:42', durationMin: 8, category: 'machine', description: 'Mold temperature out of range', status: 'active', causesDowntime: false },
-  { machine: 'Machine 4', start: '14:05', durationMin: 3, category: 'human', description: 'E-stop triggered manually', status: 'cleared', causesDowntime: false },
-  { machine: 'Machine 4', start: '15:12', durationMin: 7, category: 'machine', description: 'Nozzle alignment deviation', status: 'cleared', causesDowntime: false },
-  { machine: 'Machine 5', start: '16:18', durationMin: 5, category: 'machine', description: 'Pneumatic pressure drop', status: 'cleared', causesDowntime: false },
-  { machine: 'Machine 2', start: '16:47', durationMin: 6, category: 'machine', description: 'Feed speed slow warning', status: 'cleared', causesDowntime: false },
-  { machine: 'Machine 2', start: '17:15', durationMin: 4, category: 'human', description: 'Human override mismatch', status: 'cleared', causesDowntime: false },
+  { machine: 'Machine 4', start: '10:15', durationMin: 4, category: 'machine', description: 'Pressure spike detected', descriptionJp: '圧力の急上昇を検知', status: 'active', causesDowntime: false },
+  { machine: 'Machine 3', start: '11:45', durationMin: 6, category: 'machine', description: 'Thermal calibration shift', descriptionJp: '温度校正のずれ', status: 'cleared', causesDowntime: false },
+  { machine: 'Machine 3', start: '12:05', durationMin: 5, category: 'machine', description: 'Cycle time exceeded threshold', descriptionJp: 'サイクルタイムが閾値を超過', status: 'cleared', causesDowntime: false },
+  { machine: 'Machine 3', start: '13:42', durationMin: 8, category: 'machine', description: 'Mold temperature out of range', descriptionJp: '金型温度が許容範囲外', status: 'active', causesDowntime: false },
+  { machine: 'Machine 4', start: '14:05', durationMin: 3, category: 'human', description: 'E-stop triggered manually', descriptionJp: '手動による非常停止作動', status: 'cleared', causesDowntime: false },
+  { machine: 'Machine 4', start: '15:12', durationMin: 7, category: 'machine', description: 'Nozzle alignment deviation', descriptionJp: 'ノズル位置のずれ', status: 'cleared', causesDowntime: false },
+  { machine: 'Machine 5', start: '16:18', durationMin: 5, category: 'machine', description: 'Pneumatic pressure drop', descriptionJp: '空圧の低下', status: 'cleared', causesDowntime: false },
+  { machine: 'Machine 2', start: '16:47', durationMin: 6, category: 'machine', description: 'Feed speed slow warning', descriptionJp: '供給速度低下の警告', status: 'cleared', causesDowntime: false },
+  { machine: 'Machine 2', start: '17:15', durationMin: 4, category: 'human', description: 'Human override mismatch', descriptionJp: '手動操作の不整合', status: 'cleared', causesDowntime: false },
 ];
 
 export const stageBreakdowns = deriveStageBreakdowns(downtimeEvents, MACHINES);
-export const errLog = deriveErrLog(downtimeEvents);
 export const errHours = deriveErrHours(downtimeEvents, SHIFT_INTERVAL_BOUNDARIES, SHIFT_INTERVAL_LABELS);
 
 // --- Calculation chain: everything below is derived, not hand-typed. ---

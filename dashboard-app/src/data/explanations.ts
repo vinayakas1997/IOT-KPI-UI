@@ -1,24 +1,32 @@
 import type { InfoId, Language } from '../types';
 import { explainRegistry } from './explainRegistry';
 
-const files = import.meta.glob('../../../each-component-explanation/*.md', {
+const enFiles = import.meta.glob('../../../each-component-explanation/*.md', {
   query: '?raw',
   import: 'default',
   eager: true,
 }) as Record<string, string>;
 
-function findRaw(mdFile: string): string {
-  const entry = Object.entries(files).find(([path]) => path.endsWith(mdFile));
+const jpFiles = import.meta.glob('../../../each-component-explanation-jp/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+function findRaw(source: Record<string, string>, mdFile: string): string {
+  const entry = Object.entries(source).find(([path]) => path.endsWith(mdFile));
   return entry?.[1] ?? '';
 }
 
 const englishContent = Object.fromEntries(
-  Object.entries(explainRegistry).map(([id, entry]) => [id, findRaw(entry.mdFile)]),
+  Object.entries(explainRegistry).map(([id, entry]) => [id, findRaw(enFiles, entry.mdFile)]),
 ) as Record<InfoId, string>;
 
-const JP_PLACEHOLDER = '## 日本語\n\nJapanese translation coming soon.';
+const japaneseContent = Object.fromEntries(
+  Object.entries(explainRegistry).map(([id, entry]) => [id, findRaw(jpFiles, entry.mdFile)]),
+) as Record<InfoId, string>;
 
 export function getExplanation(id: InfoId, language: Language): string {
-  if (language === 'jp') return JP_PLACEHOLDER;
+  if (language === 'jp') return japaneseContent[id];
   return englishContent[id];
 }

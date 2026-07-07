@@ -34,6 +34,7 @@ export interface DowntimeEvent {
   durationMin: number;
   category: ErrorCategory;
   description: string;
+  descriptionJp: string;
   status: LogStatus;
   causesDowntime: boolean;
 }

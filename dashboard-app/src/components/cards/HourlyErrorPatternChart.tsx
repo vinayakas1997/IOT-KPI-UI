@@ -1,11 +1,13 @@
 import { Fragment } from 'react';
 import { Card } from '../shared/Card';
-import type { ErrorHourBucket, InfoId } from '../../types';
+import type { ErrorHourBucket, InfoId, Language } from '../../types';
 import { MACHINES } from '../../data/mockData';
+import { t, errorCategoryLabel } from '../../i18n/strings';
 import './HourlyErrorPatternChart.css';
 
 interface Props {
   errHours: ErrorHourBucket[];
+  language: Language;
   onExplainClick?: (id: InfoId) => void;
 }
 
@@ -15,11 +17,11 @@ function countColorClass(count: number): 'good' | 'warn' | 'bad' {
   return 'bad';
 }
 
-export function HourlyErrorPatternChart({ errHours, onExplainClick }: Props) {
+export function HourlyErrorPatternChart({ errHours, language, onExplainClick }: Props) {
   return (
     <Card infoId="hourly-error-pattern" flex={6} onExplainClick={onExplainClick}>
       <div className="mini-title" style={{ marginBottom: 14, flexShrink: 0 }}>
-        Interval Error Pattern (count + within-interval timing)
+        {t('hourlyErrorPattern', language)}
       </div>
       <div className="err-chart-frame">
         <div
@@ -45,7 +47,7 @@ export function HourlyErrorPatternChart({ errHours, onExplainClick }: Props) {
                         key={i}
                         className={`err-tick ${ev.cat}`}
                         style={{ left: `calc(${(ev.min / h.durationMin) * 100}% - 1.5px)` }}
-                        title={`${machine} — :${String(ev.min).padStart(2, '0')} — ${ev.cat}`}
+                        title={`${machine} — :${String(ev.min).padStart(2, '0')} — ${errorCategoryLabel(ev.cat, language)}`}
                       />
                     ))}
                 </div>
@@ -64,15 +66,15 @@ export function HourlyErrorPatternChart({ errHours, onExplainClick }: Props) {
       <div className="err-legend">
         <span>
           <i style={{ background: '#ef4444' }} />
-          Machine error
+          {t('machineError', language)}
         </span>
         <span>
           <i style={{ background: '#2563eb' }} />
-          Human error
+          {t('humanError', language)}
         </span>
         <span>
           <i style={{ background: '#a855f7' }} />
-          Other / unusual
+          {t('otherUnusual', language)}
         </span>
       </div>
     </Card>

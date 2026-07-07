@@ -1,16 +1,18 @@
 import { Card } from '../shared/Card';
-import type { UtilizationEntry, InfoId } from '../../types';
+import type { UtilizationEntry, InfoId, Language } from '../../types';
+import { t } from '../../i18n/strings';
 import './MachineUtilizationCard.css';
 
 interface Props {
   entries: UtilizationEntry[];
+  language: Language;
   onExplainClick?: (id: InfoId) => void;
 }
 
-export function MachineUtilizationCard({ entries, onExplainClick }: Props) {
+export function MachineUtilizationCard({ entries, language, onExplainClick }: Props) {
   return (
     <Card infoId="machine-utilization" flex={2.3} onExplainClick={onExplainClick}>
-      <div className="mini-title">Machine Utilization (Run / Starved / Blocked)</div>
+      <div className="mini-title">{t('machineUtilization', language)}</div>
       <div className="util-row">
         {entries.map((entry) => (
           <div className="util-stage" key={entry.machine}>
@@ -26,15 +28,15 @@ export function MachineUtilizationCard({ entries, onExplainClick }: Props) {
       <div className="legend">
         <span>
           <i style={{ background: 'var(--teal)' }} />
-          Running
+          {t('running', language)}
         </span>
         <span>
           <i style={{ background: '#cbd5e1' }} />
-          Starved
+          {t('starved', language)}
         </span>
         <span>
           <i style={{ background: 'var(--yellow)' }} />
-          Blocked
+          {t('blocked', language)}
         </span>
       </div>
     </Card>

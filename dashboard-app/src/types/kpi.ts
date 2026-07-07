@@ -45,7 +45,15 @@ export interface UtilizationEntry {
   blockedPct: number;
 }
 
+export type LineHealthMetricKey =
+  | 'availability'
+  | 'performance'
+  | 'quality'
+  | 'reliability'
+  | 'planAchieve'
+  | 'firstPassYield';
+
 export interface LineHealthMetric {
-  name: string;
+  key: LineHealthMetricKey;
   value: number;
 }

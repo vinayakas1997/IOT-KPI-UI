@@ -1,5 +1,6 @@
 import { ScatterSplineChart } from '../shared/ScatterSplineChart';
-import type { HourInterval, MachineProfileMap, MachineColorMap, InfoId } from '../../types';
+import type { HourInterval, MachineProfileMap, MachineColorMap, InfoId, Language } from '../../types';
+import { t } from '../../i18n/strings';
 
 interface Props {
   hours: HourInterval[];
@@ -7,17 +8,21 @@ interface Props {
   machineColors: MachineColorMap;
   hoveredMachine: string | null;
   onHoverMachine: (machine: string | null) => void;
+  language: Language;
   onExplainClick?: (id: InfoId) => void;
 }
 
-export function CycleTimeEnergyConsumptionChart(props: Props) {
+export function CycleTimeEnergyConsumptionChart({ language, ...props }: Props) {
   return (
     <ScatterSplineChart
       infoId="cycle-time-energy-consumption"
-      title="Cycle Time Energy Consumption"
+      title={t('cycleTimeEnergyConsumption', language)}
       flex={4}
-      axis={{ title: 'Energy (kW)', maxValue: 50, tickStep: 5 }}
+      axis={{ title: t('energyAxis', language), maxValue: 50, tickStep: 5 }}
       valueField="energy"
+      cycleLabel={t('cycleWord', language)}
+      averageLabel={t('averageWord', language)}
+      intervalLabel={t('intervalWord', language)}
       {...props}
     />
   );

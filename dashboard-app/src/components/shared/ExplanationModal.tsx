@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import type { InfoId, Language } from '../../types';
 import { explainRegistry } from '../../data/explainRegistry';
 import { getExplanation } from '../../data/explanations';
+import { t } from '../../i18n/strings';
 import './ExplanationModal.css';
 
 interface Props {
@@ -43,13 +44,19 @@ export function ExplanationModal({ infoId, language, onClose }: Props) {
 
   const entry = explainRegistry[infoId];
   const body = getExplanation(infoId, language);
+  const title = t(entry.titleKey, language);
 
   return (
     <div className="explanation-modal-overlay" onClick={onClose}>
       <div className="explanation-modal" onClick={(e) => e.stopPropagation()}>
         <div className="explanation-modal-header">
-          <span>{entry.title}</span>
-          <button type="button" className="explanation-modal-close" onClick={onClose} aria-label="Close">
+          <span>{title}</span>
+          <button
+            type="button"
+            className="explanation-modal-close"
+            onClick={onClose}
+            aria-label={t('closeModal', language)}
+          >
             ×
           </button>
         </div>

@@ -1,17 +1,19 @@
 import { Card } from '../shared/Card';
-import type { ErrLogEntry, InfoId } from '../../types';
+import type { ErrLogEntry, InfoId, Language } from '../../types';
+import { t } from '../../i18n/strings';
 import './LiveErrorAlarmLog.css';
 
 interface Props {
   entries: ErrLogEntry[];
+  language: Language;
   onExplainClick?: (id: InfoId) => void;
 }
 
-export function LiveErrorAlarmLog({ entries, onExplainClick }: Props) {
+export function LiveErrorAlarmLog({ entries, language, onExplainClick }: Props) {
   return (
     <Card
       infoId="live-error-alarm-log"
-      title="Live Error / Alarm Log"
+      title={t('liveErrorAlarmLog', language)}
       style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
       onExplainClick={onExplainClick}
     >
@@ -19,10 +21,10 @@ export function LiveErrorAlarmLog({ entries, onExplainClick }: Props) {
         <table className="err-log-table">
           <thead>
             <tr>
-              <th>Time</th>
-              <th>Machine</th>
-              <th>Error</th>
-              <th>Status</th>
+              <th>{t('colTime', language)}</th>
+              <th>{t('colMachine', language)}</th>
+              <th>{t('colError', language)}</th>
+              <th>{t('colStatus', language)}</th>
             </tr>
           </thead>
           <tbody>
@@ -33,7 +35,7 @@ export function LiveErrorAlarmLog({ entries, onExplainClick }: Props) {
                 <td>{entry.error}</td>
                 <td>
                   <span className={`status-pill ${entry.status}`}>
-                    {entry.status === 'active' ? 'Active' : 'Cleared'}
+                    {entry.status === 'active' ? t('statusActive', language) : t('statusCleared', language)}
                   </span>
                 </td>
               </tr>

@@ -1,6 +1,7 @@
 import { Card } from '../shared/Card';
-import type { StageBreakdowns, BufferWindow, InfoId } from '../../types';
+import type { StageBreakdowns, BufferWindow, InfoId, Language } from '../../types';
 import { toMin, totalBufferMinutes, computeStageReliability } from '../../utils/time';
+import { t } from '../../i18n/strings';
 import './MtbfMttrCard.css';
 
 interface Props {
@@ -10,10 +11,20 @@ interface Props {
   shiftDate: string;
   shiftStart: string;
   shiftEnd: string;
+  language: Language;
   onExplainClick?: (id: InfoId) => void;
 }
 
-export function MtbfMttrCard({ machines, stageBreakdowns, buffers, shiftDate, shiftStart, shiftEnd, onExplainClick }: Props) {
+export function MtbfMttrCard({
+  machines,
+  stageBreakdowns,
+  buffers,
+  shiftDate,
+  shiftStart,
+  shiftEnd,
+  language,
+  onExplainClick,
+}: Props) {
   const shiftTotalMin = toMin(shiftEnd) - toMin(shiftStart);
   const totalBufferMin = totalBufferMinutes(buffers);
 
@@ -33,9 +44,9 @@ export function MtbfMttrCard({ machines, stageBreakdowns, buffers, shiftDate, sh
         className="mtbf-since-label"
         onClick={onExplainClick ? (e) => { e.stopPropagation(); onExplainClick('mtbf-mttr-tracking-window'); } : undefined}
       >
-        Since {shiftDate}, {shiftStart}
+        {t('since', language)} {shiftDate}, {shiftStart}
       </div>
-      <div className="mini-title">MTBF / MTTR by Machine</div>
+      <div className="mini-title">{t('mtbfMttrByMachine', language)}</div>
       <div className="mtbf-list">
         {rows.map(({ machine, mtbfMin, mttrMin }) => {
           const mtbfClass = mtbfMin === maxMtbf ? 'good' : mtbfMin === minMtbf ? 'bad' : '';
@@ -45,10 +56,10 @@ export function MtbfMttrCard({ machines, stageBreakdowns, buffers, shiftDate, sh
             <div className="mtbf-row" key={machine}>
               <span className="mtbf-machine">{machine}</span>
               <span className="mtbf-metric">
-                MTBF: <b className={mtbfClass}>{(mtbfMin / 60).toFixed(1)}h</b>
+                {t('mtbfLabel', language)} <b className={mtbfClass}>{(mtbfMin / 60).toFixed(1)}h</b>
               </span>
               <span className="mtbf-metric">
-                MTTR: <b className={mttrClass}>{mttrMin.toFixed(0)}m</b>
+                {t('mttrLabel', language)} <b className={mttrClass}>{mttrMin.toFixed(0)}{t('minuteUnit', language)}</b>
               </span>
             </div>
           );

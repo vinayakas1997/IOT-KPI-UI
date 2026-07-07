@@ -1,5 +1,6 @@
 import { ScatterSplineChart } from '../shared/ScatterSplineChart';
-import type { HourInterval, MachineProfileMap, MachineColorMap, InfoId } from '../../types';
+import type { HourInterval, MachineProfileMap, MachineColorMap, InfoId, Language } from '../../types';
+import { t } from '../../i18n/strings';
 
 interface Props {
   hours: HourInterval[];
@@ -7,17 +8,21 @@ interface Props {
   machineColors: MachineColorMap;
   hoveredMachine: string | null;
   onHoverMachine: (machine: string | null) => void;
+  language: Language;
   onExplainClick?: (id: InfoId) => void;
 }
 
-export function CycleTimeAnalysisChart(props: Props) {
+export function CycleTimeAnalysisChart({ language, ...props }: Props) {
   return (
     <ScatterSplineChart
       infoId="cycle-time-analysis"
-      title="Cycle-Time Analysis"
+      title={t('cycleTimeAnalysis', language)}
       flex={4}
-      axis={{ title: 'Cycle Time (s)', maxValue: 100, tickStep: 10 }}
+      axis={{ title: t('cycleTimeAxis', language), maxValue: 100, tickStep: 10 }}
       valueField="cycle"
+      cycleLabel={t('cycleWord', language)}
+      averageLabel={t('averageWord', language)}
+      intervalLabel={t('intervalWord', language)}
       {...props}
     />
   );

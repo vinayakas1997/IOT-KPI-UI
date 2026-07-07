@@ -1,12 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { Card } from '../shared/Card';
-import type { LineHealthMetric, InfoId } from '../../types';
+import type { LineHealthMetric, InfoId, Language } from '../../types';
 import { RADAR_ANGLES, radarPoint } from '../../utils/radarMath';
 import { threeTierClass } from '../../utils/colorScale';
+import { t, lineHealthLabel } from '../../i18n/strings';
 import './OverallLineHealthRadar.css';
 
 interface Props {
   metrics: LineHealthMetric[];
+  language: Language;
   onExplainClick?: (id: InfoId) => void;
 }
 
@@ -16,10 +18,12 @@ const MAX_RADIUS = 90;
 const LEVELS = [20, 40, 60, 80, 100];
 const LABEL_OFFSET = 18;
 
-export function OverallLineHealthRadar({ metrics, onExplainClick }: Props) {
+export function OverallLineHealthRadar({ metrics, language, onExplainClick }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+
+  const resolvedMetrics = metrics.map((m) => ({ ...m, label: lineHealthLabel(m.key, language) }));
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -54,10 +58,10 @@ export function OverallLineHealthRadar({ metrics, onExplainClick }: Props) {
     });
 
     const coordPoints = RADAR_ANGLES.map((angle, i) => {
-      const val = metrics[i].value;
+      const val = resolvedMetrics[i].value;
       const r = MAX_RADIUS * (val / 100);
       const p = radarPoint(CENTER, CENTER, r, angle);
-      return { ...p, val, name: metrics[i].name, angle };
+      return { ...p, val, name: resolvedMetrics[i].label, angle };
     });
 
     const dataPoly = document.createElementNS(ns, 'polygon');
@@ -87,7 +91,7 @@ export function OverallLineHealthRadar({ metrics, onExplainClick }: Props) {
       text.setAttribute('y', String(outer.y));
       text.setAttribute('text-anchor', textAnchor);
       text.setAttribute('dy', dy);
-      text.textContent = metrics[i].name;
+      text.textContent = resolvedMetrics[i].label;
       svg.appendChild(text);
     });
 
@@ -127,12 +131,12 @@ export function OverallLineHealthRadar({ metrics, onExplainClick }: Props) {
       valueText.textContent = String(pt.val);
       svg.appendChild(valueText);
     });
-  }, [metrics]);
+  }, [resolvedMetrics]);
 
   return (
     <Card infoId="overall-line-health-radar" flex={1.4} onExplainClick={onExplainClick}>
       <div className="mini-title" style={{ marginBottom: 4 }}>
-        Overall Line Health
+        {t('overallLineHealth', language)}
       </div>
       <div className="radar-body">
         <div className="radar-svg-col" ref={containerRef}>
@@ -145,11 +149,11 @@ export function OverallLineHealthRadar({ metrics, onExplainClick }: Props) {
           <div className="radar-tooltip" ref={tooltipRef} />
         </div>
         <div className="radar-kpis-grid">
-          {metrics.map((m) => {
+          {resolvedMetrics.map((m) => {
             const tier = threeTierClass(m.value);
             return (
-              <div className="radar-kpi-item" key={m.name}>
-                <span className="kpi-label">{m.name}</span>
+              <div className="radar-kpi-item" key={m.key}>
+                <span className="kpi-label">{m.label}</span>
                 <span className={`kpi-value ${tier}`}>{m.value}%</span>
               </div>
             );

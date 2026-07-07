@@ -1,22 +1,25 @@
 import { Card } from '../shared/Card';
-import type { Bottleneck, InfoId } from '../../types';
+import type { Bottleneck, InfoId, Language } from '../../types';
+import { t } from '../../i18n/strings';
 import './BottleneckMachineCard.css';
 
 interface Props {
   bottleneck: Bottleneck;
+  language: Language;
   onExplainClick?: (id: InfoId) => void;
 }
 
-export function BottleneckMachineCard({ bottleneck, onExplainClick }: Props) {
+export function BottleneckMachineCard({ bottleneck, language, onExplainClick }: Props) {
   return (
     <Card infoId="bottleneck-machine" flex={1.3} onExplainClick={onExplainClick}>
-      <div className="mini-title">Bottleneck Machine</div>
+      <div className="mini-title">{t('bottleneckMachine', language)}</div>
       <div className="bottleneck-stage">{bottleneck.machine}</div>
       <div className="bottleneck-sub">
-        Cycle Time: {bottleneck.cycleTimeActual}s (highest) &middot; Ideal: {bottleneck.cycleTimeIdeal}s
+        {t('cycleTimeLabel', language)} {bottleneck.cycleTimeActual}s {t('highest', language)} &middot;{' '}
+        {t('idealLabel', language)} {bottleneck.cycleTimeIdeal}s
       </div>
 
-      <div className="cycle-compare-header">Actual / Ideal (s)</div>
+      <div className="cycle-compare-header">{t('actualIdealSeconds', language)}</div>
       <div className="cycle-compare-grid">
         {bottleneck.compare.map((entry) => (
           <div

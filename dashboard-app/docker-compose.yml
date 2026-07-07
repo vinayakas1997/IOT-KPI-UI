@@ -1,0 +1,8 @@
+services:
+  dashboard-app:
+    build:
+      context: ..
+      dockerfile: dashboard-app/Dockerfile
+    ports:
+      - "8080:80"
+    restart: unless-stopped

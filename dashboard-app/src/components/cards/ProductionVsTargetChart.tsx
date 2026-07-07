@@ -1,10 +1,12 @@
 import { Card } from '../shared/Card';
-import type { HourInterval, InfoId } from '../../types';
+import type { HourInterval, InfoId, Language } from '../../types';
+import { t } from '../../i18n/strings';
 import './ProductionVsTargetChart.css';
 
 interface Props {
   hours: HourInterval[];
   dailyTarget: number;
+  language: Language;
   onExplainClick?: (id: InfoId) => void;
 }
 
@@ -14,17 +16,17 @@ function pctColorClass(pct: number, isCurrent: boolean): 'good' | 'warn' | 'bad'
   return 'bad';
 }
 
-export function ProductionVsTargetChart({ hours, dailyTarget, onExplainClick }: Props) {
+export function ProductionVsTargetChart({ hours, dailyTarget, language, onExplainClick }: Props) {
   const cumulativeProduced = hours.reduce((sum, h) => (h.status !== 'future' ? sum + h.produced : sum), 0);
 
   return (
     <Card infoId="production-vs-target-interval-tracking" flex={6} onExplainClick={onExplainClick}>
       <div className="production-header">
         <div className="mini-title" style={{ marginBottom: 0 }}>
-          Production vs Target — Interval Tracking (incl. Overtime)
+          {t('productionVsTarget', language)}
         </div>
         <div>
-          <div className="produced-today-label">Produced Today</div>
+          <div className="produced-today-label">{t('producedToday', language)}</div>
           <div className="produced-today-value">
             {cumulativeProduced}
             <span className="target">/{dailyTarget}</span>
@@ -81,19 +83,19 @@ export function ProductionVsTargetChart({ hours, dailyTarget, onExplainClick }: 
       <div className="hourly-legend">
         <span>
           <i style={{ background: 'var(--green)' }} />
-          Produced
+          {t('produced', language)}
         </span>
         <span>
           <i style={{ background: 'var(--yellow)' }} />
-          Remaining (current hour)
+          {t('remainingCurrentHour', language)}
         </span>
         <span>
           <i style={{ background: 'var(--red)' }} />
-          Shortfall (closed hour)
+          {t('shortfallClosedHour', language)}
         </span>
         <span>
           <i style={{ background: '#d1d5db' }} />
-          Not started
+          {t('notStarted', language)}
         </span>
       </div>
     </Card>

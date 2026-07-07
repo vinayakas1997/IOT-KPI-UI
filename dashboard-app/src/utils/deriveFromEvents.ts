@@ -1,4 +1,4 @@
-import type { DowntimeEvent, ErrLogEntry, ErrorHourBucket, MachineId, StageBreakdowns } from '../types';
+import type { DowntimeEvent, ErrLogEntry, ErrorHourBucket, Language, MachineId, StageBreakdowns } from '../types';
 import { toMin } from './time';
 
 function minToHHMM(min: number): string {
@@ -19,10 +19,15 @@ export function deriveStageBreakdowns(events: DowntimeEvent[], machines: Machine
   return result;
 }
 
-export function deriveErrLog(events: DowntimeEvent[]): ErrLogEntry[] {
+export function deriveErrLog(events: DowntimeEvent[], language: Language): ErrLogEntry[] {
   return [...events]
     .sort((a, b) => toMin(b.start) - toMin(a.start))
-    .map((e) => ({ time: e.start, stage: e.machine, error: e.description, status: e.status }));
+    .map((e) => ({
+      time: e.start,
+      stage: e.machine,
+      error: language === 'jp' ? e.descriptionJp : e.description,
+      status: e.status,
+    }));
 }
 
 export function deriveErrHours(

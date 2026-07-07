@@ -21,6 +21,7 @@ import { OverallLineHealthRadar } from './components/cards/OverallLineHealthRada
 import { LiveErrorAlarmLog } from './components/cards/LiveErrorAlarmLog';
 import { ExplanationModal } from './components/shared/ExplanationModal';
 import type { InfoId, Language, LineHealthMetric } from './types';
+import { deriveErrLog } from './utils/deriveFromEvents';
 import {
   scorecardTotals,
   planAchieve,
@@ -32,7 +33,7 @@ import {
   hours,
   dailyTarget,
   errHours,
-  errLog,
+  downtimeEvents,
   MACHINES,
   stageBreakdowns,
   buffers,
@@ -47,12 +48,12 @@ import {
 const fpyAverage = Math.round(fpyByMachine.reduce((sum, e) => sum + e.pct, 0) / fpyByMachine.length);
 
 const lineHealthMetrics: LineHealthMetric[] = [
-  { name: 'Availability', value: oeeBreakdown.availabilityPct },
-  { name: 'Performance', value: oeeBreakdown.performancePct },
-  { name: 'Quality', value: oeeBreakdown.qualityPct },
-  { name: 'Reliability', value: reliabilityPct },
-  { name: 'Plan Achieve %', value: planAchieve.planAchievePct },
-  { name: 'First Pass Yield', value: fpyAverage },
+  { key: 'availability', value: oeeBreakdown.availabilityPct },
+  { key: 'performance', value: oeeBreakdown.performancePct },
+  { key: 'quality', value: oeeBreakdown.qualityPct },
+  { key: 'reliability', value: reliabilityPct },
+  { key: 'planAchieve', value: planAchieve.planAchievePct },
+  { key: 'firstPassYield', value: fpyAverage },
 ];
 
 function App() {
@@ -60,20 +61,22 @@ function App() {
   const [language, setLanguage] = useState<Language>('en');
   const [activeInfoId, setActiveInfoId] = useState<InfoId | null>(null);
 
+  const errLog = deriveErrLog(downtimeEvents, language);
+
   const main = (
     <>
       <div className="row">
-        <TotalApprovedUnitsCard value={scorecardTotals.totalApprovedUnits} onExplainClick={setActiveInfoId} />
-        <TotalDefectsCard value={scorecardTotals.totalDefects} onExplainClick={setActiveInfoId} />
-        <DefectPercentageCard pct={scorecardTotals.defectPct} onExplainClick={setActiveInfoId} />
-        <PlanAchievePercentageCard {...planAchieve} onExplainClick={setActiveInfoId} />
-        <OeePercentageAnalysisCard {...oeeBreakdown} onExplainClick={setActiveInfoId} />
+        <TotalApprovedUnitsCard value={scorecardTotals.totalApprovedUnits} language={language} onExplainClick={setActiveInfoId} />
+        <TotalDefectsCard value={scorecardTotals.totalDefects} language={language} onExplainClick={setActiveInfoId} />
+        <DefectPercentageCard pct={scorecardTotals.defectPct} language={language} onExplainClick={setActiveInfoId} />
+        <PlanAchievePercentageCard {...planAchieve} language={language} onExplainClick={setActiveInfoId} />
+        <OeePercentageAnalysisCard {...oeeBreakdown} language={language} onExplainClick={setActiveInfoId} />
       </div>
       <div className="row">
-        <BottleneckMachineCard bottleneck={bottleneck} onExplainClick={setActiveInfoId} />
-        <FirstPassYieldCard entries={fpyByMachine} onExplainClick={setActiveInfoId} />
-        <ActiveAlarmsCard count={activeAlarmsCount} onExplainClick={setActiveInfoId} />
-        <MachineUtilizationCard entries={utilization} onExplainClick={setActiveInfoId} />
+        <BottleneckMachineCard bottleneck={bottleneck} language={language} onExplainClick={setActiveInfoId} />
+        <FirstPassYieldCard entries={fpyByMachine} language={language} onExplainClick={setActiveInfoId} />
+        <ActiveAlarmsCard count={activeAlarmsCount} language={language} onExplainClick={setActiveInfoId} />
+        <MachineUtilizationCard entries={utilization} language={language} onExplainClick={setActiveInfoId} />
       </div>
       <div className="row stretch">
         <CycleTimeAnalysisChart
@@ -82,9 +85,10 @@ function App() {
           machineColors={machineColors}
           hoveredMachine={hoveredMachine}
           onHoverMachine={setHoveredMachine}
+          language={language}
           onExplainClick={setActiveInfoId}
         />
-        <ProductionVsTargetChart hours={hours} dailyTarget={dailyTarget} onExplainClick={setActiveInfoId} />
+        <ProductionVsTargetChart hours={hours} dailyTarget={dailyTarget} language={language} onExplainClick={setActiveInfoId} />
       </div>
       <div className="row stretch">
         <CycleTimeEnergyConsumptionChart
@@ -93,9 +97,10 @@ function App() {
           machineColors={machineColors}
           hoveredMachine={hoveredMachine}
           onHoverMachine={setHoveredMachine}
+          language={language}
           onExplainClick={setActiveInfoId}
         />
-        <HourlyErrorPatternChart errHours={errHours} onExplainClick={setActiveInfoId} />
+        <HourlyErrorPatternChart errHours={errHours} language={language} onExplainClick={setActiveInfoId} />
       </div>
       <div className="row stretch">
         <ShiftTimelineCard
@@ -104,6 +109,7 @@ function App() {
           buffers={buffers}
           shiftStart={shiftStart}
           shiftEnd={shiftEnd}
+          language={language}
           onExplainClick={setActiveInfoId}
         />
         <MtbfMttrCard
@@ -113,9 +119,10 @@ function App() {
           shiftDate={shiftDate}
           shiftStart={shiftStart}
           shiftEnd={shiftEnd}
+          language={language}
           onExplainClick={setActiveInfoId}
         />
-        <OverallLineHealthRadar metrics={lineHealthMetrics} onExplainClick={setActiveInfoId} />
+        <OverallLineHealthRadar metrics={lineHealthMetrics} language={language} onExplainClick={setActiveInfoId} />
       </div>
     </>
   );
@@ -125,9 +132,9 @@ function App() {
       <DashboardHeader language={language} onLanguageChange={setLanguage} />
       <DashboardContainer
         main={main}
-        sidebar={<LiveErrorAlarmLog entries={errLog} onExplainClick={setActiveInfoId} />}
+        sidebar={<LiveErrorAlarmLog entries={errLog} language={language} onExplainClick={setActiveInfoId} />}
       />
-      <DisplayTabsBar />
+      <DisplayTabsBar language={language} />
       <ExplanationModal infoId={activeInfoId} language={language} onClose={() => setActiveInfoId(null)} />
     </div>
   );
