@@ -14,3 +14,37 @@ This timeline is built from the same underlying downtime/alarm events as Active 
 
 ## What things do we need to calculate it?
 Derived directly from the shared downtime/alarm event list's stoppage entries per machine, restricted to the shift window, each one placed on the timeline by its start time and duration. Buffer windows come from a separate scheduled-stop list (breaks, changeovers) and are placed the same way. No aggregation or averaging is needed here — only converting each event's start/duration into a left-offset and width as a percentage of the total shift length.
+
+In a sequential line, a single down machine stops the entire line through cascade (see doc 09 for cascade rules).
+
+---
+## PLC Register Specification
+
+**Architecture**: 5 machines in sequence. The timeline shows each machine's state over time. Due to cascade effects, a fault at any machine quickly propagates to all others.
+
+### Machine State Registers
+| Register Name | Type | R/W | Unit | Source | Description |
+|---|---|---|---|---|---|
+| `MACHINE_n_STATE_REG` | INT | RO | — | Machine n PLC (n=1..5) | 0=Running, 1=Starved, 2=Blocked, 3=Fault/Down, 4=Off/Idle. |
+
+### Downtime Event Data (from alarm ring buffer)
+| Register Name | Type | R/W | Unit | Source | Description |
+|---|---|---|---|---|---|
+| `ALARM_ENTRY_n_TIMESTAMP` | STRING / TIME | RO | HH:MM | Line alarm PLC | Start time of stoppage. |
+| `ALARM_ENTRY_n_MACHINE_ID` | INT | RO | — | Line alarm PLC | Machine affected (1–5). |
+| `ALARM_ENTRY_n_DURATION_MIN` | REAL | RO | minutes | Line alarm PLC | Duration (filled when event clears). |
+| `ALARM_ENTRY_n_CAUSES_DOWNTIME` | BOOL | RO | — | Line alarm PLC | TRUE = production-stopping event. |
+
+### Schedule Configuration (Dashboard Input — No PLC Registers)
+Shift start/end times and buffer windows are entered in dashboard input boxes. No PLC registers needed.
+
+### Calculation
+1. Shift length = `SHIFT_END_TIME − SHIFT_START_TIME`.
+2. Buffer blocks: grey, positioned at `left = (bufferStart − shiftStart) / shiftLength`, `width = (bufferEnd − bufferStart) / shiftLength`.
+3. Down blocks: red, from alarm ring buffer entries where `CAUSES_DOWNTIME = TRUE`, positioned by timestamp and duration.
+4. Remaining space = Running (green).
+
+### PLC Team Notes
+- Three block colors: **green** (Running), **red** (Down), **grey** (Buffer/planned stop).
+- Due to cascade effects, when one machine faults, other machines will quickly show Starved/Blocked. The timeline will show this propagation visually.
+- `BUFFER_n_*` registers are **outputs** written by HMI at shift start.

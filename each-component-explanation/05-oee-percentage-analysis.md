@@ -24,3 +24,51 @@ Performance = Bottleneck's ideal cycle time / actual cycle time. It is measured 
 Quality = Total Approved Units / (Total Approved Units + Defects) — the inverse of the ratio the Defect Percentage card shows.
 
 OEE % = Availability x Performance x Quality. It is a product of three fractions, not an average of three percentages — that's what makes a single weak factor so costly to the final number.
+
+---
+## PLC Register Specification
+
+**Architecture**: Line-level OEE. Availability = ALL 5 machines running simultaneously. Performance = bottleneck's speed. Quality = final gate output.
+
+### Registers for Availability
+
+| Register Name | Type | R/W | Unit | Source | Description |
+|---|---|---|---|---|---|
+| `LOST_TIME_REG` | REAL | RO | minutes | Line controller PLC | Accumulated unplanned downtime — any machine in Fault/Down excludes the entire line. |
+
+**Note**: Shift start/end times and buffer windows are entered in dashboard input boxes. `LOST_TIME_REG` is optional — dashboard computes from `MACHINE_n_STATE_REG` if not provided.
+
+### Registers for Performance
+
+| Register Name | Type | R/W | Unit | Source | Description |
+|---|---|---|---|---|---|
+| `BOTTLENECK_ACTUAL_CT_REG` | REAL | RO | seconds | Line controller PLC | Actual cycle time of the bottleneck machine (the slowest of 5 machines). |
+
+**Note**: Ideal cycle time is entered in the dashboard input box — no PLC register needed.
+
+### Registers for Quality
+
+| Register Name | Type | R/W | Unit | Source | Description |
+|---|---|---|---|---|---|
+| `PASSED_COUNT_REG` | DINT | RO | units | Quality gate PLC (after Machine 5) | Same register as doc 01. |
+| `DEFECT_COUNT_REG` | DINT | RO | units | Quality gate PLC (after Machine 5) | Same register as doc 02. |
+
+### Calculation
+```
+plannedProductionMin = shiftEnd − shiftStart − Σ(bufferEnd − bufferStart)
+                       (shift times entered in dashboard)
+lostTimeMin          = LOST_TIME_REG (or dashboard computed from MACHINE_n_STATE_REG)
+availabilityPct      = (plannedProductionMin − lostTimeMin) / plannedProductionMin × 100
+
+performancePct       = idealCT / BOTTLENECK_ACTUAL_CT_REG × 100
+                       (idealCT entered in dashboard input box)
+
+totalUnits           = PASSED_COUNT_REG + DEFECT_COUNT_REG
+qualityPct           = PASSED_COUNT_REG / totalUnits × 100
+
+oeePct               = (availabilityPct × performancePct × qualityPct) / 10000
+```
+
+### PLC Team Notes
+- Availability drops when **any** of the 5 machines stops — in a sequential line, one stopped machine stops the entire flow.
+- The bottleneck machine is determined from the 5 per-machine `ACTUAL_CT_REG` registers plus user-entered ideal CT per machine.

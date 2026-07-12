@@ -28,3 +28,41 @@ MTTR = Down time / Failures.
 With zero failures so far in the shift, there is nothing to divide by: MTBF falls back to the running time itself and MTTR reads as 0 — that is a "no failures yet" state, not a literal zero repair time.
 
 The "Since" label itself has no calculation of its own — it just echoes the same shift date and shift start already used by this math. Extending it to a real multi-shift or multi-day tracking window would require accumulating failure/downtime events across days, which the current data model does not yet do.
+
+---
+## PLC Register Specification
+
+**Architecture**: Per-machine reliability derived from the alarm ring buffer. Each machine is a station in the sequential 5-machine line. Only unplanned down events count toward MTBF/MTTR.
+
+### Schedule Configuration (Dashboard Input — No PLC Registers)
+Shift start/end times and buffer windows are entered in dashboard input boxes. No PLC registers needed.
+
+### Down Events (from alarm ring buffer — same as doc 16)
+| Register | Type | R/W | Description |
+|---|---|---|---|
+| `ALARM_ENTRY_n_MACHINE_ID` | INT | RO | Machine affected (1–5). |
+| `ALARM_ENTRY_n_TIMESTAMP` | STRING/TIME | RO | When stoppage began. |
+| `ALARM_ENTRY_n_DURATION_MIN` | REAL | RO | Duration (filled when event clears). |
+| `ALARM_ENTRY_n_CAUSES_DOWNTIME` | BOOL | RO | Must be TRUE to count as failure. |
+
+### Pre-Computed Registers (Method A — Preferred)
+| Register Name | Type | R/W | Unit | Source | Description |
+|---|---|---|---|---|---|
+| `MACHINE_n_FAILURE_COUNT_REG` | INT | RO | count | Machine n PLC | Number of unplanned down events this shift. |
+| `MACHINE_n_TOTAL_DOWN_MIN_REG` | REAL | RO | minutes | Machine n PLC | Cumulative down time this shift. |
+| `MACHINE_n_MTBF_REG` | REAL | RO | minutes | Machine n PLC | Mean time between failures. |
+| `MACHINE_n_MTTR_REG` | REAL | RO | minutes | Machine n PLC | Mean time to repair. |
+
+### Calculation
+```
+shiftLengthMin    = shiftEnd − shiftStart (user-entered in dashboard)
+totalBufferMin    = Σ(bufferEnd − bufferStart) (user-entered in dashboard)
+runningTimeMin    = shiftLengthMin − totalBufferMin − totalDownMin
+mtbfMin           = runningTimeMin / failureCount   (if > 0, else runningTimeMin)
+mttrMin           = totalDownMin / failureCount      (if > 0, else 0)
+```
+
+### PLC Team Notes
+- Only **unplanned** downtime counts as failures. Scheduled buffers/breaks do not.
+- `MACHINE_n_FAILURE_COUNT_REG` counts **distinct** down blocks — coalesce overlapping alarms from the same machine into a single failure.
+- In a sequential line, a fault at Machine 3 will cause Machine 2 to show Blocked and Machine 4 to show Starved — these are NOT failures; they are cascade effects. Only the originating fault (Machine 3 in Fault state) should be counted. The PLC should tag the root-cause machine for each down event.

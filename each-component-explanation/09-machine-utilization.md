@@ -27,3 +27,58 @@ A continuous per-machine state signal (running / starved / blocked) from the PLC
 Percent in a state = time spent in that state divided by total shift time.
 
 To connect utilization back to cycle time impact, also capture the per-unit net cycle time, so "slow because blocked or starved" can be separated from "slow because the process itself is slow."
+
+---
+## PLC Register Specification
+
+**Architecture**: 5 machines in sequence. State cascade rules apply (see below).
+
+| Register Name | Type | R/W | Unit | Source | Description |
+|---|---|---|---|---|---|
+| `MACHINE_n_STATE_REG` | INT | RO | — | Machine n PLC (n=1..5) | Current state: 0=Running, 1=Starved, 2=Blocked, 3=Fault/Down, 4=Off/Idle. Mutually exclusive. |
+
+**Method B — Individual Bits (Fallback)**
+| Register | Type | R/W | Description |
+|---|---|---|---|
+| `MACHINE_n_RUNNING_BIT` | BOOL | RO | HIGH = machine actively cycling. |
+| `MACHINE_n_STARVED_BIT` | BOOL | RO | HIGH = waiting for input from upstream. |
+| `MACHINE_n_BLOCKED_BIT` | BOOL | RO | HIGH = cannot discharge to downstream. |
+| `MACHINE_n_FAULT_BIT` | BOOL | RO | HIGH = machine in error/down state. |
+| `MACHINE_n_IDLE_BIT` | BOOL | RO | HIGH = powered but no active state. |
+
+**Pre-computed percentages (PLC can optionally provide)**
+| Register | Type | R/W | Description |
+|---|---|---|---|
+| `MACHINE_n_RUN_PCT_REG` | REAL | RO | % of shift time machine n was Running. |
+| `MACHINE_n_STARVED_PCT_REG` | REAL | RO | % of shift time machine n was Starved. |
+| `MACHINE_n_BLOCKED_PCT_REG` | REAL | RO | % of shift time machine n was Blocked. |
+
+### State Cascade Rules (CRITICAL)
+
+In a pure sequential line, **not all states are valid for all machines**:
+
+| State | M1 | M2 | M3 | M4 | M5 |
+|---|---|---|---|---|---|
+| Running | Yes | Yes | Yes | Yes | Yes |
+| Starved | **No** | Yes | Yes | Yes | Yes |
+| Blocked | Yes | Yes | Yes | Yes | **No** |
+| Fault | Yes | Yes | Yes | Yes | Yes |
+| Off/Idle | Yes | Yes | Yes | Yes | Yes |
+
+**Cascade example — Machine 3 faults:**
+```
+T+0:    M3 stops (Fault)
+T+0.1:  M2 cannot discharge → M2 Blocked
+        M4 has no input → M4 Starved
+T+0.2:  M1 cannot discharge (M2 blocked) → M1 Blocked
+        M5 has no input (M4 starved) → M5 Starved
+```
+Result: 1 machine stopped → entire line stopped within ~2 cycle times.
+
+### Calculation
+Option A — Dashboard samples `MACHINE_n_STATE_REG` at fixed interval (e.g. 1s) and accumulates percentages.
+Option B — Dashboard reads pre-computed `MACHINE_n_RUN_PCT_REG`, `STARVED_PCT_REG`, `BLOCKED_PCT_REG`.
+
+### PLC Team Notes
+- The state signal is the **most valuable diagnostic** on the dashboard. Prioritize correct Running/Starved/Blocked/Fault transitions for each machine.
+- Starved/Blocked at a middle machine (2,3,4) is always caused by a different machine — this is the key diagnostic that lets operators trace the line's true bottleneck.
