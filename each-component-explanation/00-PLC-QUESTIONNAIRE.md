@@ -46,7 +46,7 @@ If YES: Bit name(s):
 
 ### A2. Machine State / Utilization
 
-**Q2a**: Does the PLC have a **single state register** with encoding: 0=Running, 1=Starved, 2=Blocked, 3=Fault/Down, 4=Off/Idle? (Method A)
+**Q2a**: Does the PLC have a **single state register** with encoding: 0=Running, 1=Starved, 2=Blocked, 3=Fault/Down, 4=Off/Idle? (Method A) *(Running = actively cycling, Starved = waiting for input material, Blocked = cannot discharge output, Fault/Down = error or stopped state, Off/Idle = powered but not running)*
 
 | Machine 1 | Machine 2 | Machine 3 | Machine 4 | Machine 5 |
 |---|---|---|---|---|
@@ -232,33 +232,9 @@ If YES: Register name: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_   Logic used: \_\_\_\_\_\_
 
 | # | Question | Answer |
 |---|---|---|
-| Q16 | What protocol? | Modbus TCP / OPC UA / Ethernet/IP / Profinet / Other: \_\_\_\_\_ |
-| Q17 | How often do registers change? | Every \_\_\_\_ ms |
-| Q18 | Can dashboard read anytime? | Yes / Scheduled: \_\_\_\_\_ |
-| Q19 | Are registers retentive on power cycle? | Y / N |
-| Q20 | Do we need to write any registers? | **No.** Dashboard is read-only. All configuration (targets, ideal CT, shift times) is entered in dashboard input boxes. |
+| Q16 | How often do registers change? | Every \_\_\_\_ ms |
+| Q17 | Are registers retentive on power cycle? | Y / N |
 
----
-
-## Summary Matrix (PLC team can also fill this)
-
-For each machine and each data point, write: **A** (direct register), **B** (bits/signals), **N** (not available)
-
-| Data Point | M1 | M2 | M3 | M4 | M5 |
-|---|---|---|---|---|---|
-| Cycle Time | | | | | |
-| Machine State | | | | | |
-| FPY (Operation Pass) | | | | | |
-| Energy | | | | | |
-
-| Line-Level Data | Available? | Method |
-|---|---|---|
-| Production Counters | Y / N | A / B |
-| Shift Schedule | Y / N | — |
-| Targets | Y / N | — |
-| Alarm System | Y / N | A / B |
-| Runtime | Y / N | Dashboard computes (B) |
-| Bottleneck | Y / N | Dashboard computes (B) |
 
 ---
 
@@ -267,33 +243,5 @@ For each machine and each data point, write: **A** (direct register), **B** (bit
 1. Answer each question with **Y** (already available) or **N** (not available)
 2. For each **Y**, write the register name or bit name the dashboard should read
 3. If a section has a Method A question answered **Y**, skip the Method B questions for that section
-4. Return this form to the dashboard team
+4. Return this form to the IOT team
 5. We will map your available registers to dashboard capabilities and report back
-
----
-
-## For Dashboard Team Use Only
-
-After receiving the completed questionnaire, fill the coverage table below and share with the PLC team.
-
-| Component | M1 | M2 | M3 | M4 | M5 | Line |
-|---|---|---|---|---|---|---|
-| Approved Units | — | — | — | — | — | ✅/⚠️/❌ |
-| Defects | — | — | — | — | — | ✅/⚠️/❌ |
-| Defect % | — | — | — | — | — | ✅/⚠️/❌ |
-| Plan Achieve | — | — | — | — | — | ✅/⚠️/❌ |
-| OEE | — | — | — | — | — | ✅/⚠️/❌ |
-| Bottleneck | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | — |
-| FPY | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | — |
-| Active Alarms | — | — | — | — | — | ✅/⚠️/❌ |
-| Utilization | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | — |
-| Cycle Time | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | — |
-| Prod vs Target | — | — | — | — | — | ✅/⚠️/❌ |
-| Energy | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | — |
-| Hourly Error | — | — | — | — | — | ✅/⚠️/❌ |
-| Timeline | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | — |
-| Radar | — | — | — | — | — | ✅/⚠️/❌ |
-| Alarm Log | — | — | — | — | — | ✅/⚠️/❌ |
-| MTBF/MTTR | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | ✅/⚠️/❌ | — |
-
-✅ = Full functionality   ⚠️ = Partial (Method B fallback)   ❌ = Not available (needs PLC addition)
