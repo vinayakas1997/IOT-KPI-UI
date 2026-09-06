@@ -1,0 +1,28 @@
+.header__spacer {
+  flex: 1;
+}
+
+.header__settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--gray);
+  cursor: pointer;
+}
+
+.header__settings-btn:hover {
+  color: var(--teal);
+  border-color: var(--teal);
+}
+
+.header__settings-btn svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}

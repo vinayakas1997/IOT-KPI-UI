@@ -5,3 +5,4 @@ export * from './errors';
 export * from './maintenance';
 export * from './infoId';
 export * from './language';
+export * from './settings';

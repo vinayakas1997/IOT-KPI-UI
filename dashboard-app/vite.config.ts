@@ -13,5 +13,13 @@ export default defineConfig({
   },
   server: {
     fs: { allow: ['..'] },
+    proxy: {
+      // Forward API calls to the Python backend during `npm run dev`.
+      // Change the port here if you run the backend elsewhere.
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
+    },
   },
 })

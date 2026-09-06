@@ -1,0 +1,56 @@
+import type { LiveSnapshot } from '../api/types';
+import {
+  scorecardTotals,
+  planAchieve,
+  oeeBreakdown,
+  bottleneck,
+  fpyByMachine,
+  activeAlarmsCount,
+  utilization,
+  hours,
+  dailyTarget,
+  errHours,
+  downtimeEvents,
+  MACHINES,
+  stageBreakdowns,
+  buffers,
+  shiftDate,
+  shiftStart,
+  shiftEnd,
+  machineProfiles,
+  machineColors,
+  reliabilityPct,
+} from './mockData';
+
+/**
+ * Used as the initial render value and whenever the backend is unreachable, so
+ * the dashboard never shows a blank screen. Once `GET /api/snapshot` succeeds,
+ * this is replaced wholesale by live data.
+ */
+export const fallbackSnapshot: LiveSnapshot = {
+  ready: false,
+  generatedAt: '',
+  businessDate: shiftDate,
+  MACHINES,
+  scorecardTotals,
+  planAchieve,
+  oeeBreakdown,
+  bottleneck,
+  fpyByMachine,
+  activeAlarmsCount,
+  utilization,
+  reliabilityPct,
+  hours,
+  dailyTarget,
+  errHours,
+  downtimeEvents,
+  stageBreakdowns,
+  energyByMachine: {},
+  stateByMachine: {},
+  buffers,
+  shiftDate,
+  shiftStart,
+  shiftEnd,
+  machineProfiles,
+  machineColors,
+};

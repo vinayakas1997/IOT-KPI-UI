@@ -11,7 +11,8 @@ body,
 
 #root {
   height: 100dvh;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
@@ -21,8 +22,7 @@ body,
 }
 
 .app-shell {
-  flex: 1;
-  min-height: 0;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -40,7 +40,7 @@ body,
 
 /* Layout grid with sidebar */
 .dashboard-container {
-  flex: 1;
+  flex: 1 0 auto;
   display: flex;
   gap: clamp(8px, 1.2vw, 18px);
   align-items: stretch;
@@ -153,10 +153,11 @@ body,
   text-align: center;
 }
 
-/* Rows 3-5 of main-content stretch to fill remaining height, cards fill their row */
+/* Rows 3-5 of main-content stretch to fill remaining height, cards fill their row.
+   min-height keeps each row readable when the viewport is short and the page scrolls. */
 .main-content .row.stretch {
-  flex: 1;
-  min-height: 0;
+  flex: 1 0 auto;
+  min-height: clamp(230px, 26vh, 330px);
 }
 
 .main-content .row.stretch .card {
@@ -166,4 +167,33 @@ body,
   min-height: 0;
   justify-content: space-between;
   overflow: hidden;
+}
+
+/* Live-connection indicator (backend poller status) */
+.live-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 16px 6px;
+  font-size: 11px;
+  color: var(--gray);
+}
+
+.live-status__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gray);
+}
+
+.live-status--live .live-status__dot {
+  background: var(--green);
+}
+
+.live-status--connecting .live-status__dot {
+  background: var(--yellow);
+}
+
+.live-status--offline .live-status__dot {
+  background: var(--red);
 }
